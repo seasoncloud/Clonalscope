@@ -51,7 +51,7 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=0.1, beta=0.1, ni
 
   #set.seed(100)
   # Gibbs sampling
-  for(tt in 1:100){
+  for(tt in 1:niter){
     for(ii in 1:N){
       mu_new=numeric(R)
       Zi=Zt[ii]
