@@ -22,8 +22,14 @@
 #' @export
 EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, gtf=NULL, celltype0=NULL, var_pt=0.99, var_pt_ctrl=0.99, include='tumor',
                       alpha_source='all', ctrl_region=NULL, seg_table_filtered=NULL,size=NULL, plot_path=NULL, breaks=30){
-  colnames(mtx)=barcodes$V1
-  rownames(mtx)=features$V1
+
+  ## check gtf with "chr"
+  if(!grepl("chr",gtf[1,1])){
+    gtf[,1]=paste0('chr', gtf[,1])
+  }
+
+  colnames(mtx)=barcodes[,1]
+  rownames(mtx)=features[,1]
   celltypes=celltype0
 
   mtx=mtx[,match(celltypes[,1], colnames(mtx) )]
@@ -53,8 +59,8 @@ EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, gtf=NULL, celltype
   ngenes=c()
 
   if(!is.null(plot_path)){
-  pdf(plot_path, width = 8, height = 6)
-  par(mfrow=c(2,3))
+    pdf(plot_path, width = 8, height = 6)
+    par(mfrow=c(2,3))
   }
   for(chrr in paste0(seg_table_filtered$chrr)){
     #chrr=c('chr8')
@@ -101,11 +107,11 @@ EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, gtf=NULL, celltype
     # compute cell size from control region
     if(alpha_source=='all'){
       #alphas=colSums(rna[,sel_cell])
-      alphas=colSums(rna_control[,sel_cell])
+      alphas=colSums(rna_control[,sel_cell, drop=F])
     }else if(alpha_source=='control'){
       # from control region
-      rna_chr1=rna[which(gtf_sub$V1 %in% ctrl_region),]
-      alphas=colSums(rna_chr1[,sel_cell])
+      rna_chr1=rna[which(gtf_sub$V1 %in% ctrl_region), , drop=F]
+      alphas=colSums(rna_chr1[,sel_cell, drop=F])
     }else{
       stop("alpha_source is not valid!")
     }
@@ -134,15 +140,19 @@ EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, gtf=NULL, celltype
 
     if(!is.null(plot_path)){
       celltype_tmp=celltypes[match(names(deltas), celltypes[,1]),2]
-      c2 <- rgb(173,216,230,max = 255, alpha = 50, names = "lt.blue")
-      c1 <- rgb(255,192,203, max = 255, alpha = 50, names = "lt.pink")
-      ha=hist(deltas[which(celltype_tmp=='tumor')],breaks = breaks, plot=FALSE)
-      if(length(unique(celltype_tmp))>1){
-      hb=hist(deltas[which(celltype_tmp=='normal')],breaks = breaks, plot = FALSE)
-      }
-      plot(ha, xlim=c(0,3), main=paste0(chrr, ":", nrow(controlCounts), " genes; ", length(deltas), " cells"), col=c1)
-      if(length(unique(celltype_tmp))>1){
-      plot(hb, add=TRUE, col=c2)
+      if(length(which(celltype_tmp=='tumor'))>1 & length(which(celltype_tmp=='normal'))>1){
+        #c2 <- rgb(173,216,230,max = 255, alpha = 50, names = "lt.blue")
+        c2 <- rgb(56,101,195,max = 255, alpha = 50, names = "lt.blue")
+        #c1 <- rgb(255,192,203, max = 255, alpha = 50, names = "lt.pink")
+        c1 <- rgb(239,90,155, max = 255, alpha = 50, names = "lt.pink")
+        ha=hist(deltas[which(celltype_tmp=='tumor')],breaks = breaks, plot=FALSE)
+        if(length(unique(celltype_tmp))>1){
+          hb=hist(deltas[which(celltype_tmp=='normal')],breaks = breaks, plot = FALSE)
+        }
+        plot(ha, xlim=c(0,3), main=paste0(chrr, ":", nrow(controlCounts), " genes; ", length(deltas), " cells"), col=c1)
+        if(length(unique(celltype_tmp))>1){
+          plot(hb, add=TRUE, col=c2)
+        }
       }
     }
     ##
