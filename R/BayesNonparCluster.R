@@ -12,9 +12,10 @@
 #' sigma_all: estimated standard deviation of each region (column) for each iteration (row); Likelihood: total data likelihood for each iteration.
 #' "priors" stores the prior values used in the process.
 #'
+#' @import amap
 #' @export
 BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=0.1, beta=0.1, niter=200, sigmas0=NULL){
-
+  library(amap)
   #cna_states_WGS=U[2,]
   # set values
   N=nrow(Xir)
@@ -37,7 +38,6 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=0.1, beta=0.1, ni
 
 
   # extreme condition
-  library(amap)
   if(length(table(Z0))==1){
     dd=Dist(Xir, method='correlation')
     dd=as.matrix(dd)

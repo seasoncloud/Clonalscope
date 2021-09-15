@@ -17,7 +17,8 @@ Imports:
     caTools,
     pheatmap,
     cowplot,
-    HiddenMarkov
+    HiddenMarkov,
+    amap
 Depends: 
     R (>= 3.6.0),
     Matrix,

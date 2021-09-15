@@ -28,6 +28,8 @@ PlotClusters=function(df=NULL, celltype=NULL, Zest=NULL, mode="cluster", maxv=3)
     celltype0=data.frame(celltype0, stringsAsFactors = F)
     pheatmap(df2,cluster_cols = F, cluster_rows = F,clustering_distance_rows = "correlation",clustering_method = "ward.D2", show_rownames = F, show_colnames = T, annotation_row = celltype0)
   }else{
-    pheatmap(df2,cluster_cols = F, cluster_rows = F,clustering_distance_rows = "correlation",clustering_method = "ward.D2", show_rownames = F, show_colnames = T, annotation_row = celltype_cluster)
+    celltype0=celltype_cluster
+    colnames(celltype0)='cluster0'
+    pheatmap(df2,cluster_cols = F, cluster_rows = F,clustering_distance_rows = "correlation",clustering_method = "ward.D2", show_rownames = F, show_colnames = T, annotation_row = celltype0)
   }
 }
