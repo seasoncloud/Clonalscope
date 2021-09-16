@@ -1,4 +1,4 @@
-AssignCluster=function(cluster_obj=NULL, mincell=20){
+AssignCluster=function(cluster_obj=NULL, mincell=20, cuttoff=0.4){
 
   ## set values
   R=ncol(cluster_obj$priors$U0)
@@ -50,9 +50,16 @@ AssignCluster=function(cluster_obj=NULL, mincell=20){
 
   sigmas=sqrt(1/(N)*colSums((Xir-Usub[Zest,])^2))
 
+  ## order clusters and classify normal/tumor cells
+  corrs=apply(Usub, 1, function(x) cor(as.numeric(cluster_obj$priors$U0[2,]),x))
+  corrs[is.na(corrs)]=0
+  annot=as.numeric(corrs)
+  annot[annot<=cutoff]="N"
+  annot[annot!="N"]=paste0("T")
+
   message("Succeed!")
 
-  return(list(Zest=Zest, Uest=Usub, sigmas_est=sigmas, Zmaj= maj_vote))
+  return(list(Zest=Zest, corrs=corrs, annot=annot,Uest=Usub, sigmas_est=sigmas, Zmaj= maj_vote))
 
 
 }
