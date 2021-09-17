@@ -13,8 +13,8 @@
 PlotClusters=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="cluster", maxv=3){
 
   Zest=Assign_obj$Zest
-  corrs=Assign_obj$corrs[Zest]
-  annot=Assign_obj$annot[Zest]
+  corrs=Assign_obj$corrs
+  annot=Assign_obj$annot
 
   #celltype=cbind(celltype[,1:2], as.character(Zest)[match(celltype[,1],rownames(df))])
   celltype=cbind(celltype[,],as.character(annot)[match(celltype[,1],rownames(df))], as.character(Zest)[match(celltype[,1],rownames(df))], as.numeric(corrs)[match(celltype[,1],rownames(df))])

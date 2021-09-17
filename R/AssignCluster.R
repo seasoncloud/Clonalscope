@@ -1,4 +1,4 @@
-AssignCluster=function(cluster_obj=NULL, mincell=20, cuttoff=0.4){
+AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.4){
 
   ## set values
   R=ncol(cluster_obj$priors$U0)
@@ -59,7 +59,7 @@ AssignCluster=function(cluster_obj=NULL, mincell=20, cuttoff=0.4){
 
   message("Succeed!")
 
-  return(list(Zest=Zest, corrs=corrs, annot=annot,Uest=Usub, sigmas_est=sigmas, Zmaj= maj_vote))
+  return(list(Zest=Zest, corrs=corrs[Zest], annot=annot[Zest],Uest=Usub, sigmas_est=sigmas, Zmaj= maj_vote))
 
 
 }
