@@ -6,6 +6,7 @@
 #' @param beta The concentration parameter used in the nested Chinese restaurant process controlling the probability that a new subclone is sampled for each cell.
 #' @param niter Integer. Number of iteration for the Gibb's sampling.
 #' @param sigmas0 A numeric vector with the same length as the number of columns of Xir. The prior standard deviation for the normal distributoion.
+#' @param U0 A matrix/data.frame with each row being a cluster and each column being a region (ncol(U0) should be the same as ncol(Xir)). The values represent prior mean of relatvie coverage for each cluster.
 #'
 #' @return A list with "results" and "priors"/
 #' "results" contains Zall: estimated subclone identity of each cell (column) for each iteration (row); Uall: estimated mean values for each subclone and each iteration;
@@ -14,7 +15,7 @@
 #'
 #' @import amap
 #' @export
-BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=0.1, beta=0.1, niter=200, sigmas0=NULL){
+BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=0.1, beta=0.1, niter=200, sigmas0=NULL, U0=NULL){
   library(amap)
   #cna_states_WGS=U[2,]
   # set values
@@ -24,25 +25,41 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=0.1, beta=0.1, ni
   cna_states_WGS=as.numeric(cna_states_WGS)
 
   # priors
+  if(is.null(U0)){
   U0=matrix(c(rep(1,R), cna_states_WGS), byrow=T, ncol=R)
-  P0=apply(Xir,1, function(x) sum(dnorm(x, U0[1,],0.3, log = T)))
-  P1=apply(Xir,1, function(x) sum(dnorm(x, U0[2,],0.3, log = T)))
-  Z0=rep(1, N)
-  Z0[which(P0<P1)]=2
-
-  if(length(sigmas0) !=R){
-  sigmas0=rep(0.5,R)
+  }else if(ncol(U0)==R){
+    U0=U0
+  }else{
+    stop("Please specify a matrix with ncol the same as that of Xir!")
   }
-  colnames(U0)=names(sigmas0)=paste0("R", 1:R)
-  rownames(U0)=paste0("Cluster", 1:nrow(U0))
+  # P0=apply(Xir,1, function(x) sum(dnorm(x, U0[1,],0.3, log = T)))
+  # P1=apply(Xir,1, function(x) sum(dnorm(x, U0[2,],0.3, log = T)))
+  # Z0=rep(1, N)
+  # Z0[which(P0<P1)]=2
+  PP=matrix(0, ncol=nrow(U0), nrow=nrow(Xir))
+  for(ii in 1:nrow(U0)){
+    pp=apply(Xir,1, function(x) sum(dnorm(x, U0[ii,],0.3, log = T)))
+    PP[,ii]=pp
+  }
+  Z0=apply(PP, 1, function(x) which.max(x))
 
 
   # extreme condition
   if(length(table(Z0))==1){
     dd=Dist(Xir, method='correlation')
-    dd=as.matrix(dd)
+    hc=hclust(dd)
+    ct=cutree(hc, k = 2)
+    Z0=ct
+    U0=matrix(c(colMeans(Xir[which(ct==1),]), colMeans(Xir[which(ct==2),])), byrow=T, ncol=R)
+    #dd=as.matrix(dd)
   }
 
+  if(length(sigmas0) !=R){
+    sigmas0=rep(0.5,R)
+  }
+
+  colnames(U0)=names(sigmas0)=paste0("R", 1:R)
+  rownames(U0)=paste0("Cluster", 1:nrow(U0))
 
   # initialization
   LL=numeric(niter)
@@ -157,7 +174,7 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=0.1, beta=0.1, ni
   colnames(Zall)=paste0("Cell", 1:N)
 
   results=list(Zall=Zall, Uall=Uall, sigma_all=sigma_all, Likelihood=LL)
-  priors=list(Z0=Z0, U0=U0, sigmas0=sigmas0, alpha=alpha, beta=beta)
+  priors=list(Z0=Z0, U0=U0, sigmas0=sigmas0, alpha=alpha, beta=beta, cna_states_WGS=cna_states_WGS)
   return(list(results=results, priors=priors, data=Xir))
 
 }
