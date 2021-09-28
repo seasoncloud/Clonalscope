@@ -1,4 +1,4 @@
-AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.4){
+AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.5){
 
   ## set values
   R=ncol(cluster_obj$priors$U0)
@@ -51,15 +51,67 @@ AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.4){
   sigmas=sqrt(1/(N)*colSums((Xir-Usub[Zest,])^2))
 
   ## order clusters and classify normal/tumor cells
-  corrs=apply(Usub, 1, function(x) cor(as.numeric(cluster_obj$priors$U0[2,]),x))
+  priors=cluster_obj$priors$cna_states_WGS#cluster_obj$priors$U0[2,]
+
+
+
+  # correlation
+  # while(sd(priors)==0){
+  #   priors=sample(c(0.001, -0.001), length(priors), replace = T)+priors
+  # }
+
+  #ind_cna=which(priors != 1)
+  corrs=apply(Usub[,,drop=F], 1, function(x)
+  sum((as.numeric(x)-1)*(as.numeric(priors[])-1)))#/(sqrt(sum((as.numeric(x)-1)^2))*sqrt(sum((as.numeric(priors[])-1)^2))))
+  #cor(as.numeric(priors),x)) ###c
   corrs[is.na(corrs)]=0
+  corrs=corrs/max(corrs)
+
+  #if(dist=='correlation'){
+  # if(sd(priors)==0){
+  #   Manhattan <- function(a, b) (sum(abs(a - b)))
+  #   corrs=apply(Usub, 1, function(x) Manhattan(as.numeric(priors),x))/length(priors)
+  # }else{
+
+  ## cross-product
+  # library(lsa)
+  # crossproduct=function(x){
+  #   if(all(is.na(x))==F){
+  #     cos=cosine(priors, x)
+  #     sin=sqrt(1-cos^2)
+  #     #abscp=sqrt(sum(x^2))*sqrt(sum(priors2^2))*sin/sqrt(sum(priors2^2))
+  #     x2=abs(x-priors)+1
+  #     abscp=sqrt(sum(x2^2))/sqrt(sum(1*R))*sin
+  #     # x2=x#/(sqrt(sum(x^2)))
+  #     #   return(sqrt(sum((crossn(as.numeric(priors2),x2)))^2))
+  #   }else{
+  #     return(100)
+  #   }}
+  #
+  # corrs=apply(Usub, 1, crossproduct)
+  # corrs[is.na(corrs)]=100
+
+  ## eucledian
+ # corrs=apply(Usub, 1, function(x) sqrt(sum((priors-x)^2))/length(priors))
+  #corrs[is.na(corrs)]=0
+  #}
+  # }else{
+  #   Manhattan <- function(a, b) (sum(abs(a - b)))
+  #   corrs=apply(Usub, 1, function(x) Manhattan(as.numeric(priors),x))/length(priors)
+  # }
   annot=as.numeric(corrs)
-  annot[annot<=cutoff]="N"
-  annot[annot!="N"]=paste0("T")
+
+  if(cutoff=='km'){
+  km=kmeans(annot[which(annot!=100)],2)
+  cutoff=mean(km$centers)
+  }
+
+  annot[annot>cutoff]="T"
+  annot[annot!="T"]=paste0("N")
 
   message("Succeed!")
 
-  return(list(Zest=Zest, corrs=corrs[Zest], annot=annot[Zest],Uest=Usub, sigmas_est=sigmas, Zmaj= maj_vote))
+  return(list(Zest=Zest, corrs=corrs[Zest], annot=annot[Zest],Uest=Usub, sigmas_est=sigmas, Zmaj= maj_vote, cutoff=cutoff))
 
 
 }
