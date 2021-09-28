@@ -62,6 +62,10 @@ EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, gtf=NULL, celltype
     pdf(plot_path, width = 8, height = 6)
     par(mfrow=c(2,3))
   }
+
+  # index for subsetting the seg_table_filtered
+  sel_ind=c()
+
   for(chrr in paste0(seg_table_filtered$chrr)){
     #chrr=c('chr8')
     #gene_ind=which(gtf_sub$V1 %in% chrr)
@@ -78,6 +82,8 @@ EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, gtf=NULL, celltype
     if(length(sel_cell)==0){
       next
     }
+
+    sel_ind=c(sel_ind, chrr)
     rna_sub=rna_sub[,sel_cell, drop=F]
 
 
@@ -175,7 +181,9 @@ EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, gtf=NULL, celltype
     dev.off()
   }
 
-  return(list(deltas_all=deltas_all, ngenes=ngenes))
+  seg_table_filtered=seg_table_filtered[which(seg_table_filtered$chrr %in% sel_ind),, drop=F]
+
+  return(list(deltas_all=deltas_all, ngenes=ngenes, seg_table_filtered=seg_table_filtered))
 }
 
 
