@@ -48,10 +48,11 @@ PlotClusters=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="segment", m
         cols0=(celltype0[,ii])
       }
       table(cols0)
-      if(length(table(cols0))>7){
-        col_use=c(colors()[c(609,536,563,652,611, 463, 498)], colors()[sample(1:length(colors())[-c(609,536,563,652,611, 463, 498)],length(table(cols0))-7)])
+      if(length(table(cols0))>20){
+        col_use=c(colors()[c(609, 536, 62, 652, 611, 463, 498, 71, 258, 84, 56, 26, 154, 59, 134, 78, 116, 85, 20, 259)],
+                  colors()[sample(1:length(colors())[-c(609, 536, 62, 652, 611, 463, 498, 71, 258, 84, 56, 26, 154, 59, 134, 78, 116, 85, 20, 259)],length(table(cols0))-20)])
       }else{
-        col_use=c(colors()[c(609,536,563,652,611, 463, 498)])[1:length(table(cols0))]
+        col_use=c(colors()[c(609, 536, 62, 652, 611, 463, 498, 71, 258, 84, 56, 26, 154, 59, 134, 78, 116, 85, 20, 259)])[1:length(table(cols0))]
       }
       #tmp=1:length(table(cols0))
       #names(tmp)=paste0('c',names(table(cols0)))
@@ -93,10 +94,11 @@ PlotClusters=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="segment", m
         cols0=(celltype0[,ii])
       }
       table(cols0)
-      if(length(table(cols0))>7){
-      col_use=c(colors()[c(609,536,563,652,611, 463, 498)], colors()[sample(1:length(colors())[-c(609,536,563,652,611, 463, 498)],length(table(cols0))-7)])
+      if(length(table(cols0))>20){
+        col_use=c(colors()[c(609, 536, 62, 652, 611, 463, 498, 71, 258, 84, 56, 26, 154, 59, 134, 78, 116, 85, 20, 259)],
+                  colors()[sample(1:length(colors())[-c(609, 536, 62, 652, 611, 463, 498, 71, 258, 84, 56, 26, 154, 59, 134, 78, 116, 85, 20, 259)],length(table(cols0))-20)])
       }else{
-        col_use=c(colors()[c(609,536,563,652,611, 463, 498)])[1:length(table(cols0))]
+        col_use=c(colors()[c(609, 536, 62, 652, 611, 463, 498, 71, 258, 84, 56, 26, 154, 59, 134, 78, 116, 85, 20, 259)])[1:length(table(cols0))]
       }
       #tmp=1:length(table(cols0))
       #names(tmp)=paste0('c',names(table(cols0)))

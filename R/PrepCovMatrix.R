@@ -9,7 +9,7 @@ PrepCovMatrix=function(deltas_all=NULL, ngene_filter=200, ncell_filter=NULL){
   #ngene_filter
   if(is.null(ncell_filter)){
   ncells=as.numeric(lapply(df, length))
-  ncell_filter=max(ncells)-200
+  ncell_filter=max(ncells)-(max(ncells)*0.1)
   }
   message(paste0("Selecting regions with > ", ngene_filter, " genes \n"))
   message(paste0("Selecting regions with > ", ncell_filter, " cells \n"))

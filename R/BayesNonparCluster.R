@@ -32,6 +32,11 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=0.1, beta=0.1, ni
   }else{
     stop("Please specify a matrix with ncol the same as that of Xir!")
   }
+
+  # chr=sapply(strsplit(colnames(df2),"-"),'[',1)
+  # start=as.numeric(sapply(strsplit(colnames(df2),"-"),'[',2))
+  # end=as.numeric(sapply(strsplit(colnames(df2),"-"),'[',3))
+  # seglen=end-start
   # P0=apply(Xir,1, function(x) sum(dnorm(x, U0[1,],0.3, log = T)))
   # P1=apply(Xir,1, function(x) sum(dnorm(x, U0[2,],0.3, log = T)))
   # Z0=rep(1, N)

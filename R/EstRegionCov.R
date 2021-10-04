@@ -22,7 +22,7 @@
 #' @export
 EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, gtf=NULL, celltype0=NULL, var_pt=0.99, var_pt_ctrl=0.99, include='tumor',
                       alpha_source='all', ctrl_region=NULL, seg_table_filtered=NULL,size=NULL, plot_path=NULL, breaks=30){
-
+  ## test
   ## check gtf with "chr"
   if(!grepl("chr",gtf[1,1])){
     gtf[,1]=paste0('chr', gtf[,1])
@@ -38,6 +38,7 @@ EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, gtf=NULL, celltype
   rna=mtx[which(rna_var<quantile(rna_var,var_pt) & (rna_var!=0)), ]
   rna_control=mtx[which(rna_var<quantile(rna_var,var_pt_ctrl) & (rna_var!=0)), ]
 
+
   gtf_sub=gtf[match(rownames(rna), gtf$gene_id),]
   gtf_sub[is.na(gtf_sub)]=0
 
@@ -51,7 +52,7 @@ EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, gtf=NULL, celltype
 
   if(is.null(seg_table_filtered)){
     message("Estimation for each chromosome")
-    seg_table_filtered=data.frame("chr"=gsub("chr","",size[1:22,1]), 'start'=0, 'end'=as.numeric(size[1:22,2]),
+    seg_table_filtered0=data.frame("chr"=gsub("chr","",size[1:22,1]), 'start'=0, 'end'=as.numeric(size[1:22,2]),
                                   'states'=0, 'length'=as.numeric(size[1:22,2]),'mean'=0, 'var'=0, 'Var1'=1:22,'Freq'=50000,'chrr'=size[1:22,1], stringsAsFactors = F)
   }
 
@@ -75,9 +76,13 @@ EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, gtf=NULL, celltype
     subject=GRanges(seqnames = gtf_sub$V1, ranges=IRanges(start=as.numeric(gtf_sub$V4), end=as.numeric(gtf_sub$V5)))
     ov=as.matrix(findOverlaps(query=query, subject = subject))
     gene_ind=ov[,2]
+
+
     rna_sub=rna[gene_ind,, drop=F]
 
-    sel_cell=which(colSums(rna_sub)>0)
+    sel_cell=which(Matrix::colSums(rna_sub)>0)
+
+
 
     if(length(sel_cell)==0){
       next
@@ -113,11 +118,11 @@ EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, gtf=NULL, celltype
     # compute cell size from control region
     if(alpha_source=='all'){
       #alphas=colSums(rna[,sel_cell])
-      alphas=colSums(rna_control[,sel_cell, drop=F])
+      alphas=Matrix::colSums(rna_control[,sel_cell, drop=F])
     }else if(alpha_source=='control'){
       # from control region
       rna_chr1=rna[which(gtf_sub$V1 %in% ctrl_region), , drop=F]
-      alphas=colSums(rna_chr1[,sel_cell, drop=F])
+      alphas=Matrix::colSums(rna_chr1[,sel_cell, drop=F])
     }else{
       stop("alpha_source is not valid!")
     }
@@ -140,7 +145,7 @@ EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, gtf=NULL, celltype
     # estimate delta for cell_ir
     # for one region r
 
-    deltas=colSums(testCounts)/median(colSums(controlCounts))
+    deltas=Matrix::colSums(testCounts)/median(Matrix::colSums(controlCounts))
 
     names(deltas)=colnames(testCounts)
 
