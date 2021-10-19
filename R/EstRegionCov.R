@@ -20,7 +20,7 @@
 #' @import rtracklayer
 #' @import Matrix
 #' @export
-EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, gtf=NULL, celltype0=NULL, var_pt=0.99, var_pt_ctrl=0.99, include='tumor',
+EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, gtf=NULL, celltype0=NULL, var_pt=0.99, var_pt_ctrl=0.99,ngene_filter=0, include='tumor',
                       alpha_source='all', ctrl_region=NULL, seg_table_filtered=NULL,size=NULL, plot_path=NULL, breaks=30){
   ## test
   ## check gtf with "chr"
@@ -35,8 +35,12 @@ EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, gtf=NULL, celltype
   mtx=mtx[,match(celltypes[,1], colnames(mtx) )]
 
   rna_var=apply(mtx,1, var)
-  rna=mtx[which(rna_var<quantile(rna_var,var_pt) & (rna_var!=0)), ]
-  rna_control=mtx[which(rna_var<quantile(rna_var,var_pt_ctrl) & (rna_var!=0)), ]
+  ngenes=rowSums(mtx)
+
+  #rna=mtx[which(rna_var<quantile(rna_var[which(rna_var!=0)],var_pt) & (rna_var!=0) & ngenes>ngene_filter), ]
+  #rna_control=mtx[which(rna_var<quantile(rna_var[which(rna_var!=0)],var_pt_ctrl) & (rna_var!=0) & ngenes>ngene_filter), ]
+  rna=mtx[which(rna_var<quantile(rna_var,var_pt) & (rna_var!=0) & ngenes>ngene_filter), ]
+  rna_control=mtx[which(rna_var<quantile(rna_var,var_pt_ctrl) & (rna_var!=0) & ngenes>ngene_filter), ]
 
 
   gtf_sub=gtf[match(rownames(rna), gtf$gene_id),]

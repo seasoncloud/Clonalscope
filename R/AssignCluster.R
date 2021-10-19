@@ -30,7 +30,7 @@ AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.5){
   ## Reassign cells not in the current clusters to one of the current cluster
   for(ii in ind_cell){
     P=rep(NA, nrow(Usub))
-    P[ind_clusters]=apply(Usub[ind_clusters,],1, function(x) sum(dnorm(Xir[ii,], x, sigmas, log=T)))
+    P[ind_clusters]=apply(Usub[ind_clusters,, drop=F],1, function(x) sum(dnorm(Xir[ii,], x, sigmas, log=T)))
     P[ind_clusters]=P[ind_clusters]-max(P[ind_clusters])
     #Zest[ii]=which.max(P)
     P[is.na(P)]=min(P, na.rm = T)-100
@@ -52,6 +52,11 @@ AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.5){
 
   ## order clusters and classify normal/tumor cells
   priors=cluster_obj$priors$cna_states_WGS#cluster_obj$priors$U0[2,]
+
+  if(all(priors==1)){
+    priors=rep(1.5, ncol(Usub))
+    #priors=Usub[as.numeric(names(table(Zest)))[which.max(table(Zest))],]
+  }
 
 
 
@@ -109,9 +114,17 @@ AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.5){
   annot[annot>cutoff]="T"
   annot[annot!="T"]=paste0("N")
 
+  ## label clusters with priors
+  # Zest0=Zest
+  # if(!is.null(rownames(cluster_obj$priors$U0))){
+  # tmp=1:max(Zest)
+  # tmp[1:nrow(cluster_obj$priors$U0)]=rownames(cluster_obj$priors$U0)
+  # Zest=tmp[Zest]
+  # }
+
   message("Succeed!")
 
-  return(list(Zest=Zest, corrs=corrs[Zest], annot=annot[Zest],Uest=Usub, sigmas_est=sigmas, Zmaj= maj_vote, cutoff=cutoff))
+  return(list(Zest=Zest, corrs=corrs[Zest], annot=annot[Zest],Uest=Usub, sigmas_est=sigmas, Zmaj= maj_vote, cutoff=cutoff, U0=cluster_obj$priors$U0))
 
 
 }
