@@ -5,8 +5,10 @@
 #' @param alpha The concentration parameter used in the nested Chinese restaurant process controlling the probability that a new CNV state is sampled other than the existing ones for each region.
 #' @param beta The concentration parameter used in the nested Chinese restaurant process controlling the probability that a new subclone is sampled for each cell.
 #' @param niter Integer. Number of iteration for the Gibb's sampling.
-#' @param sigmas0 A numeric vector with the same length as the number of columns of Xir. The prior standard deviation for the normal distributoion.
+#' @param sigmas0 A numeric vector with the same length as the number of columns of Xir (or length 1). The prior standard deviation for the normal distributoion.
 #' @param U0 A matrix/data.frame with each row being a cluster and each column being a region (ncol(U0) should be the same as ncol(Xir)). The values represent prior mean of relatvie coverage for each cluster.
+#' @param Z0 A numeric vector indicating the cluster identity for each cell. The order show be the same as that of Xir's row. The values should represent the order of the cluster the same as that of U0's row.
+#' @param seed Integer. Set the seed for the stochastic process.
 #'
 #' @return A list with "results" and "priors"/
 #' "results" contains Zall: estimated subclone identity of each cell (column) for each iteration (row); Uall: estimated mean values for each subclone and each iteration;
@@ -61,7 +63,7 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=
   if(is.null(Z0)){
   PP=matrix(0, ncol=nrow(U0), nrow=nrow(Xir))
   for(ii in 1:nrow(U0)){
-    pp=apply(Xir,1, function(x) sum(dnorm(x, U0[ii,],0.3, log = T)))
+    pp=apply(Xir,1, function(x) sum(dnorm(x, U0[ii,],sigmas0, log = T)))
     PP[,ii]=pp
   }
   Z0=apply(PP, 1, function(x) which.max(x))
