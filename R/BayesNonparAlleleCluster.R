@@ -50,7 +50,7 @@ BayesNonparAlleleCluster=function(Xir_cov=NULL,Xir_allele=NULL, cna_states_WGS=N
     U0=U0[1:max(which(!is.na(U0[,1]))),, drop=F]
     cna_states_WGS=U0[min(2, nrow(U0)),]
   }else{
-    stop("Please specify a matrix with ncol the same as that of Xir!")
+    stop("Please specify a U0 matrix with ncol the same as that of Xir!")
   }
 
   U0c=matrix(mu[U0,1],byrow=F, ncol=ncol(U0))

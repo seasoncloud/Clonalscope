@@ -39,7 +39,20 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=
     U0=U0[1:max(which(!is.na(U0[,1]))),, drop=F]
     cna_states_WGS=U0[min(2, nrow(U0)),]
   }else{
-    stop("Please specify a matrix with ncol the same as that of Xir!")
+    stop("Please specify a U0 matrix with ncol the same as that of Xir!")
+  }
+
+
+  if(!is.null(sigmas0)){
+    if(length(sigmas0)==1){
+      sigmas0=rep(sigmas0, R)
+    }else if(length(sigmas0)==R){
+      sigmas0=sigmas0
+    }else{
+      stop("Please specify sigmas0 with length R or length 1.")
+    }
+  }else{
+    sigmas0=rep(0.25,R)
   }
 
   #weights=abs(as.numeric(apply(U0==1, 2, all))-1)+1
@@ -86,17 +99,6 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=
   #   #dd=as.matrix(dd)
   # }
 
-  if(!is.null(sigmas0)){
-    if(length(sigmas0)==1){
-      sigmas0=rep(sigmas0, R)
-    }else if(length(sigmas0)==R){
-      sigmas0=sigmas0
-    }else{
-      stop("Please specify sigmas0 with length R or length 1.")
-    }
-  }else{
-    sigmas0=rep(0.25,R)
-  }
 
   colnames(U0)=names(sigmas0)=paste0("R", 1:R)
   #rownames(U0)=paste0("Cluster", 1:nrow(U0))
