@@ -18,7 +18,7 @@
 #' @import amap
 #' @export
 BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=200, sigmas0=NULL, U0=NULL, Z0=NULL, seed=200){
-  library(amap)
+  #library(amap)
   #cna_states_WGS=U[2,]
   # set values
   N=nrow(Xir)
@@ -28,16 +28,26 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=
 
   # priors
   if(is.null(U0)){
+    wU0=FALSE
     if(!is.null(cna_states_WGS)){
   U0=matrix(c(rep(1,R), cna_states_WGS), byrow=T, ncol=R)
     }else{
       U0=matrix(c(rep(1,R), byrow=T, ncol=R))
-      cna_states_WGS=U0[min(2, nrow(U0)),]
+      if(nrow(U0)!=1){
+      cna_states_WGS=U0[which(!is.na(result$Uest[,1]))[2],]
+      }else{
+        cna_states_WGS=U0[1,]
+      }
     }
   }else if(ncol(U0)==R){
+    wU0=TRUE
     U0=U0
     U0=U0[1:max(which(!is.na(U0[,1]))),, drop=F]
-    cna_states_WGS=U0[min(2, nrow(U0)),]
+    if(nrow(U0)!=1){
+      cna_states_WGS=U0[which(!is.na(result$Uest[,1]))[2],]
+    }else{
+      cna_states_WGS=U0[1,]
+    }
   }else{
     stop("Please specify a U0 matrix with ncol the same as that of Xir!")
   }
@@ -241,7 +251,7 @@ set.seed(seed)
   colnames(Zall)=rownames(Xir)
 
   results=list(Zall=Zall, Uall=Uall, sigma_all=sigma_all, Likelihood=LL)
-  priors=list(Z0=Z0, U0=U0, sigmas0=sigmas0, alpha=alpha, beta=beta, cna_states_WGS=cna_states_WGS, L0=L0)
+  priors=list(Z0=Z0, U0=U0, sigmas0=sigmas0, alpha=alpha, beta=beta, cna_states_WGS=cna_states_WGS, L0=L0, wU0=wU0, seed=seed)
   return(list(results=results, priors=priors, data=Xir))
 
 }

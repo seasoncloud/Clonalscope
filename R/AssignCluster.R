@@ -133,7 +133,7 @@ AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.5, allele=FALSE){
 
   message("Succeed!")
 
-  return(list(Zest=Zest, corrs=corrs[Zest], annot=annot[Zest],Uest=Usub, sigmas_est=sigmas, Zmaj= maj_vote, cutoff=cutoff, U0=cluster_obj$priors$U0))
+  return(list(Zest=Zest, corrs=corrs[Zest], annot=annot[Zest],Uest=Usub, sigmas_est=sigmas, Zmaj= maj_vote, cutoff=cutoff, U0=cluster_obj$priors$U0,  wU0=cluster_obj$priors$wU0))
 
 
   }else{
@@ -303,7 +303,7 @@ AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.5, allele=FALSE){
 
     message("Succeed!")
 
-    return(list(Zest=Zest, corrs=corrs[Zest], annot=annot[Zest],Uest=Usub,Ucest=Usubc,Uaest=Usuba, sigmas_cov_est=sigmas_cov,sigmas_allele_est=sigmas_allele,  Zmaj= maj_vote, cutoff=cutoff, U0=cluster_obj$priors$U0))
+    return(list(Zest=Zest, corrs=corrs[Zest], annot=annot[Zest],Uest=Usub,Ucest=Usubc,Uaest=Usuba, sigmas_cov_est=sigmas_cov,sigmas_allele_est=sigmas_allele,  Zmaj= maj_vote, cutoff=cutoff, U0=cluster_obj$priors$U0, wU0=cluster_obj$priors$wU0))
 
 
   }

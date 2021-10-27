@@ -35,7 +35,7 @@ EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, gtf=NULL, celltype
   mtx=mtx[,match(celltypes[,1], colnames(mtx) )]
 
   rna_var=apply(mtx,1, var)
-  ngenes=rowSums(mtx)
+  ngenes=Matrix::rowSums(mtx)
 
   #rna=mtx[which(rna_var<quantile(rna_var[which(rna_var!=0)],var_pt) & (rna_var!=0) & ngenes>ngene_filter), ]
   #rna_control=mtx[which(rna_var<quantile(rna_var[which(rna_var!=0)],var_pt_ctrl) & (rna_var!=0) & ngenes>ngene_filter), ]

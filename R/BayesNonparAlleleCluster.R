@@ -19,7 +19,7 @@
 #' @import amap
 #' @export
 BayesNonparAlleleCluster=function(Xir_cov=NULL,Xir_allele=NULL, cna_states_WGS=NULL,alpha=1, beta=1, niter=200, sigmas0_cov=NULL, sigmas0_allele=NULL, U0=NULL, Z0=NULL, maxcp=6,seed=200){
-  library(amap)
+  #library(amap)
   # cna_states_WGS=U[2,]
   # set values
   #mu=matrix(c(c(0.5,0), c(0.5,1),c(1,0),c(1,0.5),c(1,1),c(1.5,0),c(1.5,0.33),c(1.5, 0.66),c(1.5, 1),c(2, 0), c(2, 0.25), c(2,0.5),c(2,0.75),c(2,1),c(2.5, 0),c(2.5,0.2),c(2.5,0.4), c(2.5, 0.6), c(2.5, 0.8), c(2.5, 1), c(3,0),c(3,1/6),c(3,2/6),c(3,3/6),c(3,4/6),c(3,5/6),c(3,1))
@@ -39,17 +39,29 @@ BayesNonparAlleleCluster=function(Xir_cov=NULL,Xir_allele=NULL, cna_states_WGS=N
 
   # priors
   if(is.null(U0)){
+    wU0=FALSE
     if(!is.null(cna_states_WGS)){
       U0=matrix(c(rep(4,R), cna_states_WGS), byrow=T, ncol=R)
     }else{
       U0=matrix(c(rep(4,R), byrow=T, ncol=R))
-      cna_states_WGS=U0[min(2, nrow(U0)),]
+      #cna_states_WGS=U0[min( which(!is.na(result$Uest[,1]))[2], length( which(!is.na(result$Uest[,1])))),]
+      if(nrow(U0)!=1){
+        cna_states_WGS=U0[which(!is.na(result$Uest[,1]))[2],]
+      }else{
+        cna_states_WGS=U0[1,]
+      }
     }
   }else if(ncol(U0)==R){
+    wU0=TRUE
     U0=U0
     U0=U0[1:max(which(!is.na(U0[,1]))),, drop=F]
-    cna_states_WGS=U0[min(2, nrow(U0)),]
-  }else{
+    #cna_states_WGS=U0[min( which(!is.na(result$Uest[,1]))[2], length( which(!is.na(result$Uest[,1])))),]
+    if(nrow(U0)!=1){
+      cna_states_WGS=U0[which(!is.na(result$Uest[,1]))[2],]
+    }else{
+      cna_states_WGS=U0[1,]
+    }
+    }else{
     stop("Please specify a U0 matrix with ncol the same as that of Xir!")
   }
 
@@ -286,7 +298,7 @@ BayesNonparAlleleCluster=function(Xir_cov=NULL,Xir_allele=NULL, cna_states_WGS=N
   results=list(Zall=Zall, Uall=Uall,Ucov=Ucov,Uallele=Uallele,
                sigma_cov_all=sigma_cov_all,sigma_allele_all=sigma_allele_all,
                Likelihood=LL)
-  priors=list(Z0=Z0, U0=U0, sigmas0_cov=sigmas0_cov, sigmas0_allele=sigmas0_allele, alpha=alpha, beta=beta, cna_states_WGS=cna_states_WGS, L0=L0)
+  priors=list(Z0=Z0, U0=U0, sigmas0_cov=sigmas0_cov, sigmas0_allele=sigmas0_allele, alpha=alpha, beta=beta, cna_states_WGS=cna_states_WGS, L0=L0, wU0=wU0)
   data=list(Xir_cov=Xir_cov, Xir_allele=Xir_allele)
   return(list(results=results, priors=priors, data=data))
 

@@ -9,15 +9,21 @@
 #' @return A heatmap showing the result from the Bayesian non-parametric clustering. Each row is a cell and each column is a region. The values are the coverage change.
 #'
 #' @import pheatmap
+#' @import RColorBrewer
 #' @export
-PlotClusters=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="segment", consensus=F, maxv=3, fontsize=10,  fontsize_row = 10 , fontsize_col = 10, allele=F, show_annot=T){
-
+PlotClusters=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="segment", consensus=F, maxv=2, fontsize=10,  fontsize_row = 10 , fontsize_col = 10, allele=F, show_annot=T){
+maxv=pmax(maxv,2)
 if(allele==F){
   library(pheatmap)
   Zest=Assign_obj$Zest
   corrs=Assign_obj$corrs
   annot=Assign_obj$annot
   U0=Assign_obj$U0
+  wU0=Assign_obj$wU0
+
+  if(wU0==FALSE){
+    U0=U0[1,, drop=F]
+  }
 
   #celltype=cbind(celltype[,1:2], as.character(Zest)[match(celltype[,1],rownames(df))])
   celltype=celltype[match(rownames(df), celltype[,1]), , drop=F]
@@ -89,13 +95,19 @@ if(allele==F){
     df2_colnamae=colnames(df2)
     df2_rownames=rownames(df2)
     df2=Assign_obj$Uest[as.numeric(celltype[od,(ncol(celltype)-1), drop=T]),,drop=F]
+    df2=apply(df2, c(2), function(x) pmin(x, maxv))
     colnames(df2)=df2_colnamae
     rownames(df2)=df2_rownames
 
   }
 
+  breaksList = seq(0-(maxv-2), maxv, by = (maxv+(maxv-2))/100)
+
   if(mode=='segment'){
-    pheatmap(df2,cluster_cols = F, cluster_rows = F,clustering_distance_rows = "correlation",clustering_method = "ward.D2", show_rownames = F, show_colnames = T, annotation_row = celltype0,annotation_colors = ann_colors, fontsize = fontsize,  fontsize_row =fontsize_row , fontsize_col = fontsize_col)
+    pheatmap(df2,cluster_cols = F, cluster_rows = F,clustering_distance_rows = "correlation",clustering_method = "ward.D2",
+             show_rownames = F, show_colnames = T, annotation_row = celltype0,annotation_colors = ann_colors,
+             fontsize = fontsize,  fontsize_row =fontsize_row , fontsize_col = fontsize_col,
+             color = colorRampPalette(rev(brewer.pal(n = 7, name ="RdBu")))(100), breaks = breaksList)
 
     }else{
 
@@ -117,7 +129,11 @@ if(allele==F){
     coln[ceiling(c(0,cumsum(chrn)[1:(length(chrn)-1)])+chrn/2)]=names(chrn)
     colnames(df2_plot)=coln
 
-    pheatmap(df2_plot,cluster_cols = F, cluster_rows = F,clustering_distance_rows = "correlation",clustering_method = "ward.D2", show_rownames = F, show_colnames = T, annotation_row = celltype0, gaps_col = cumsum(chrn), annotation_colors = ann_colors, fontsize = fontsize, fontsize_row =fontsize_row , fontsize_col = fontsize_col)
+    pheatmap(df2_plot,cluster_cols = F, cluster_rows = F,clustering_distance_rows = "correlation",clustering_method = "ward.D2",
+             show_rownames = F, show_colnames = T, annotation_row = celltype0, gaps_col = cumsum(chrn),
+             annotation_colors = ann_colors, fontsize = fontsize, fontsize_row =fontsize_row , fontsize_col = fontsize_col,
+             color = colorRampPalette(rev(brewer.pal(n = 7, name ="RdBu")))(100),
+             breaks = breaksList)
   }
   #   }else{
   #   celltype0=celltype[,(ncol(celltype)-1), drop=F]
@@ -132,6 +148,12 @@ if(allele==F){
   U0=Assign_obj$U0
   df_cov=df$Xir_cov
   df_allele=df$Xir_allele
+  wU0=Assign_obj$wU0
+
+  if(wU0==FALSE){
+    U0=U0[1,, drop=F]
+  }
+
 
   #celltype=cbind(celltype[,1:2], as.character(Zest)[match(celltype[,1],rownames(df))])
   celltype=celltype[match(rownames(df_cov), celltype[,1]), , drop=F]
@@ -203,6 +225,7 @@ if(allele==F){
     df2_colnames=colnames(df2_cov)
     df2_rownames=rownames(df2_cov)
     df2=Assign_obj$Uest[as.numeric(celltype[od,(ncol(celltype)-1), drop=T]),,drop=F]
+    df2=apply(df2, c(2), function(x) pmin(x, maxv))
     colnames(df2)=df2_colnames
     rownames(df2)=df2_rownames
 
@@ -222,10 +245,15 @@ if(allele==F){
         "#c7e9b4","#7fcdbb","#41b6c4","#41ab5d","#006d2c", "#000000",
         "#7B241C", "#7B241C", "#7B241C","#7B241C","#7B241C","#7B241C","#7B241C")
 
+  breaksList = seq(0-(maxv-2), maxv, by = (maxv+(maxv-2))/100)
+
   if(mode=='segment'){
+
     pheatmap(df2,cluster_cols = F, cluster_rows = F,clustering_distance_rows = "correlation",clustering_method = "ward.D2",
              show_rownames = F, show_colnames = T, annotation_row = celltype0,annotation_colors = ann_colors, color = col,breaks = 0:26,
-             fontsize = fontsize,  fontsize_row =fontsize_row , fontsize_col = fontsize_col)
+             fontsize = fontsize,  fontsize_row =fontsize_row , fontsize_col = fontsize_col,
+             color = colorRampPalette(rev(brewer.pal(n = 7, name ="RdBu")))(100),
+             breaks=breaksList)
 
   }else{
 
@@ -249,7 +277,9 @@ if(allele==F){
 
     pheatmap(df2_plot,cluster_cols = F, cluster_rows = F,clustering_distance_rows = "correlation",clustering_method = "ward.D2",
              show_rownames = F, show_colnames = T, annotation_row = celltype0, gaps_col = cumsum(chrn), annotation_colors = ann_colors, color = col,breaks = 0:26,
-             fontsize = fontsize, fontsize_row =fontsize_row , fontsize_col = fontsize_col)
+             fontsize = fontsize, fontsize_row =fontsize_row , fontsize_col = fontsize_col,
+             color = colorRampPalette(rev(brewer.pal(n = 7, name ="RdBu")))(100),
+             breaks=breaksList)
   }
   #   }else{
   #   celltype0=celltype[,(ncol(celltype)-1), drop=F]

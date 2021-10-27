@@ -9,6 +9,7 @@
 #' @return A UMAP showing the result from the Bayesian non-parametric clustering.
 #'
 #' @import pheatmap
+#' @import uwot
 #' @export
 PlotUMAP=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="Zest",  maxv=3, size=1){
   library(pheatmap)

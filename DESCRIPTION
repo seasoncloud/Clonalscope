@@ -18,7 +18,7 @@ Imports:
     pheatmap,
     cowplot,
     HiddenMarkov,
-    amap
+    RColorBrewer
 Depends: 
     R (>= 3.6.0),
     Matrix,
