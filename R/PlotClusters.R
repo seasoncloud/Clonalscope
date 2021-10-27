@@ -38,9 +38,25 @@ if(allele==F){
   celltype_cluster=celltype[,(ncol(celltype)), drop=F]
   rownames(celltype_cluster)=celltype[,1]
   od=order(as.numeric(celltype_cluster[,1]), decreasing = F)
+
+
   df2=df2[od,, drop=F]
   celltype_cluster=celltype_cluster[od,, drop=F]
   celltype_cluster=data.frame(celltype_cluster, stringsAsFactors = F)
+
+  # ## order with hierarchical clustering
+  # corr_name=celltype_cluster[which(!duplicated(celltype_cluster[,1])),1]
+  # df3=NULL
+  # for(ii in 1:length(corr_name)){
+  #   df_tmp=df2[which(celltype_cluster[,1] == corr_name[ii]),,drop=F]
+  #   #DD=dist(df_tmp)
+  #   DD=Dist(df_tmp, method='correlation')
+  #   hh=hclust(DD, method=clust_method)
+  #   df_tmp=df_tmp[hh$order,,drop=F]
+  #   df3=rbind(df3, df_tmp)
+  # }
+  # colnames(df3)=colnames(df2)
+  # df2=df3
 
   if(show_annot==TRUE){
   celltype0=celltype[,-c(1,ncol(celltype)), drop=F]
@@ -107,7 +123,7 @@ if(allele==F){
     pheatmap(df2,cluster_cols = F, cluster_rows = F,clustering_distance_rows = "correlation",clustering_method = "ward.D2",
              show_rownames = F, show_colnames = T, annotation_row = celltype0,annotation_colors = ann_colors,
              fontsize = fontsize,  fontsize_row =fontsize_row , fontsize_col = fontsize_col,
-             color = colorRampPalette(rev(brewer.pal(n = 7, name ="RdBu")))(100), breaks = breaksList)
+             color = colorRampPalette(rev(RColorBrewer::brewer.pal(n = 7, name ="RdBu")))(100), breaks = breaksList)
 
     }else{
 
@@ -132,7 +148,7 @@ if(allele==F){
     pheatmap(df2_plot,cluster_cols = F, cluster_rows = F,clustering_distance_rows = "correlation",clustering_method = "ward.D2",
              show_rownames = F, show_colnames = T, annotation_row = celltype0, gaps_col = cumsum(chrn),
              annotation_colors = ann_colors, fontsize = fontsize, fontsize_row =fontsize_row , fontsize_col = fontsize_col,
-             color = colorRampPalette(rev(brewer.pal(n = 7, name ="RdBu")))(100),
+             color = colorRampPalette(rev(RColorBrewer::brewer.pal(n = 7, name ="RdBu")))(100),
              breaks = breaksList)
   }
   #   }else{
@@ -252,7 +268,7 @@ if(allele==F){
     pheatmap(df2,cluster_cols = F, cluster_rows = F,clustering_distance_rows = "correlation",clustering_method = "ward.D2",
              show_rownames = F, show_colnames = T, annotation_row = celltype0,annotation_colors = ann_colors, color = col,breaks = 0:26,
              fontsize = fontsize,  fontsize_row =fontsize_row , fontsize_col = fontsize_col,
-             color = colorRampPalette(rev(brewer.pal(n = 7, name ="RdBu")))(100),
+             color = colorRampPalette(rev(RColorBrewer::brewer.pal(n = 7, name ="RdBu")))(100),
              breaks=breaksList)
 
   }else{
@@ -278,7 +294,7 @@ if(allele==F){
     pheatmap(df2_plot,cluster_cols = F, cluster_rows = F,clustering_distance_rows = "correlation",clustering_method = "ward.D2",
              show_rownames = F, show_colnames = T, annotation_row = celltype0, gaps_col = cumsum(chrn), annotation_colors = ann_colors, color = col,breaks = 0:26,
              fontsize = fontsize, fontsize_row =fontsize_row , fontsize_col = fontsize_col,
-             color = colorRampPalette(rev(brewer.pal(n = 7, name ="RdBu")))(100),
+             color = colorRampPalette(rev(RColorBrewer::brewer.pal(n = 7, name ="RdBu")))(100),
              breaks=breaksList)
   }
   #   }else{

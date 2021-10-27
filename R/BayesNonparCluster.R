@@ -34,7 +34,7 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=
     }else{
       U0=matrix(c(rep(1,R), byrow=T, ncol=R))
       if(nrow(U0)!=1){
-      cna_states_WGS=U0[which(!is.na(result$Uest[,1]))[2],]
+      cna_states_WGS=U0[which(!is.na(U0[,1]))[2],]
       }else{
         cna_states_WGS=U0[1,]
       }
@@ -44,7 +44,7 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=
     U0=U0
     U0=U0[1:max(which(!is.na(U0[,1]))),, drop=F]
     if(nrow(U0)!=1){
-      cna_states_WGS=U0[which(!is.na(result$Uest[,1]))[2],]
+      cna_states_WGS=U0[which(!is.na(U0[,1]))[2],]
     }else{
       cna_states_WGS=U0[1,]
     }
