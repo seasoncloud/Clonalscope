@@ -17,6 +17,11 @@ PlotUMAP=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="Zest",  maxv=3,
   #corrs=Assign_obj$corrs
   annot=Assign_obj$annot
   U0=Assign_obj$U0
+  wU0=Assign_obj$wU0
+
+  if(wU0==FALSE){
+    U0=U0[1,, drop=F]
+  }
 
   #celltype=cbind(celltype[,1:2], as.character(Zest)[match(celltype[,1],rownames(df))])
   celltype=celltype[match(rownames(df), celltype[,1]), , drop=F]

@@ -12,6 +12,7 @@ EstRegionCov(
   celltype0 = NULL,
   var_pt = 0.99,
   var_pt_ctrl = 0.99,
+  ngene_filter = 0,
   include = "tumor",
   alpha_source = "all",
   ctrl_region = NULL,

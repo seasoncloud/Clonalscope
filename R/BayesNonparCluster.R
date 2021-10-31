@@ -30,11 +30,11 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=
   if(is.null(U0)){
     wU0=FALSE
     if(!is.null(cna_states_WGS)){
-  U0=matrix(c(rep(1,R), cna_states_WGS), byrow=T, ncol=R)
+      U0=matrix(c(rep(1,R), cna_states_WGS), byrow=T, ncol=R)
     }else{
       U0=matrix(c(rep(1,R), byrow=T, ncol=R))
       if(nrow(U0)!=1){
-      cna_states_WGS=U0[which(!is.na(U0[,1]))[2],]
+        cna_states_WGS=U0[which(!is.na(U0[,1]))[2],]
       }else{
         cna_states_WGS=U0[1,]
       }
@@ -43,10 +43,13 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=
     wU0=TRUE
     U0=U0
     U0=U0[1:max(which(!is.na(U0[,1]))),, drop=F]
-    if(nrow(U0)!=1){
-      cna_states_WGS=U0[which(!is.na(U0[,1]))[2],]
-    }else{
-      cna_states_WGS=U0[1,]
+    if(is.null(cna_states_WGS)| (length(cna_states_WGS)!=R)){
+      message("Invalid/no cna_states_WGS detected. Use the one the same as that in the U0.")
+      if(nrow(U0)!=1){
+        cna_states_WGS=U0[which(!is.na(U0[,1]))[2],]
+      }else{
+        cna_states_WGS=U0[1,]
+      }
     }
   }else{
     stop("Please specify a U0 matrix with ncol the same as that of Xir!")
@@ -84,12 +87,12 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=
   # Z0[which(P0<P1)]=2
 
   if(is.null(Z0)){
-  PP=matrix(0, ncol=nrow(U0), nrow=nrow(Xir))
-  for(ii in 1:nrow(U0)){
-    pp=apply(Xir,1, function(x) sum(dnorm(x, U0[ii,],sigmas0, log = T)))
-    PP[,ii]=pp
-  }
-  Z0=apply(PP, 1, function(x) which.max(x))
+    PP=matrix(0, ncol=nrow(U0), nrow=nrow(Xir))
+    for(ii in 1:nrow(U0)){
+      pp=apply(Xir,1, function(x) sum(dnorm(x, U0[ii,],sigmas0, log = T)))
+      PP[,ii]=pp
+    }
+    Z0=apply(PP, 1, function(x) which.max(x))
   }else if(length(Z0)!=N){
     stop("Please specify a vector with length the same as the number of cells!")
   }else{
@@ -119,11 +122,16 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=
   Uall=vector("list",niter)
   sigma_all=vector("list", niter)
   Zall=matrix(nrow=niter, ncol=N)
-  Ut=U0
   Zt=Z0
   sigmas=sigmas0
-  kt=nrow(Ut)
 
+  if(length(unique(Z0))>1){
+  kt=nrow(U0)
+  }else{
+   kt=1
+   U0=matrix(rep(1,R), byrow=T, ncol=R)
+ }
+  Ut=U0
 
   #npoints_percluster=as.numeric(table(Zt))
   npoints_percluster=table(Zt)[as.character(1:max(Zt))]
@@ -132,7 +140,7 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=
   #names(npoints_percluster)=paste0("c",1:2)
 
 
-set.seed(seed)
+  set.seed(seed)
   #set.seed(100)
   # Gibbs sampling
   for(tt in 1:niter){
@@ -191,19 +199,19 @@ set.seed(seed)
         Ut=rbind(Ut, mu_new)
       }else{
         npoints_percluster[Zt[ii]]=npoints_percluster[Zt[ii]]+1
-        }
+      }
 
 
       kt=length(npoints_percluster)
-    #print(ii)
-      }
+      #print(ii)
+    }
     Ut=matrix(nrow=kt, ncol=R)
     for(kk in (1:kt)[which(npoints_percluster!=0)]){
       meanX=colMeans(Xir[which(Zt==kk),, drop=F],  na.rm = T)
       meanX[is.na(meanX)]=0
       if(!all(meanX==0)){
-      muX=rnorm(n = R,meanX, sigmas/sqrt(sum(Zt==kk)))
-      muX[which(muX<0)]=0
+        muX=rnorm(n = R,meanX, sigmas/sqrt(sum(Zt==kk)))
+        muX[which(muX<0)]=0
       }else{
         muX=rep(0, R)
       }

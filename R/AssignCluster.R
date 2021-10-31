@@ -1,4 +1,4 @@
-AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.5, allele=FALSE){
+AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.3, allele=FALSE, cna_states_WGS=NULL){
 
   if(allele==FALSE){
   ## set values
@@ -7,6 +7,10 @@ AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.5, allele=FALSE){
   Uall=cluster_obj$results$Uall
   Xir=cluster_obj$data
   N=nrow(Xir)
+
+  #if(is.null(corr_region_ind)){
+    corr_region_ind=1:R
+  #}
 
   ## take majority vote
   set.seed(100)
@@ -52,8 +56,11 @@ AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.5, allele=FALSE){
   sigmas=sqrt(1/(N)*colSums((Xir-Usub[Zest,])^2))
 
   ## order clusters and classify normal/tumor cells
+  if(is.null(cna_states_WGS)){
   priors=cluster_obj$priors$cna_states_WGS#cluster_obj$priors$U0[2,]
-
+  }else{
+  priors=cna_states_WGS
+}
   if(all(priors==1)){
     priors=rep(1.5, ncol(Usub))
     #priors=Usub[as.numeric(names(table(Zest)))[which.max(table(Zest))],]
@@ -75,8 +82,8 @@ AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.5, allele=FALSE){
   # }
 
   #ind_cna=which(priors != 1)
-  corrs=apply(Usub[,,drop=F], 1, function(x)
-  sum((as.numeric(x)-1)*(as.numeric(priors[])-1)))#/(sqrt(sum((as.numeric(x)-1)^2))*sqrt(sum((as.numeric(priors[])-1)^2))))
+  corrs=apply(Usub[,corr_region_ind,drop=F], 1, function(x)
+  sum((as.numeric(x)-1)*(as.numeric(priors[corr_region_ind])-1)))#/(sqrt(sum((as.numeric(x)-1)^2))*sqrt(sum((as.numeric(priors[])-1)^2))))
   #cor(as.numeric(priors),x)) ###c
   corrs[is.na(corrs)]=0
   corrs=corrs/max(corrs)
@@ -146,6 +153,10 @@ AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.5, allele=FALSE){
     Xir_cov=cluster_obj$data$Xir_cov
     Xir_allele=cluster_obj$data$Xir_allele
     N=nrow(Xir_cov)
+
+    if(is.null(corr_region_ind)){
+      corr_region_ind=1:R
+    }
 
     ## take majority vote
     set.seed(100)
@@ -225,7 +236,12 @@ AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.5, allele=FALSE){
 
 
     ## order clusters and classify normal/tumor cells
-    priors=cluster_obj$priors$cna_states_WGS#cluster_obj$priors$U0[2,]
+    #priors=cluster_obj$priors$cna_states_WGS#cluster_obj$priors$U0[2,]
+    if(is.null(cna_states_WGS)){
+      priors=cluster_obj$priors$cna_states_WGS#cluster_obj$priors$U0[2,]
+    }else{
+      priors=cna_states_WGS
+    }
 
     if(all(priors==4)){
       priors=rep(8, ncol(Usubc))
@@ -245,8 +261,8 @@ AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.5, allele=FALSE){
     priorsc=mu[priors,1]
 
     #ind_cna=which(priors != 1)
-    corrs=apply(Usubc[,,drop=F], 1, function(x)
-      sum((as.numeric(x)-1)*(as.numeric(priorsc[])-1)))#/(sqrt(sum((as.numeric(x)-1)^2))*sqrt(sum((as.numeric(priors[])-1)^2))))
+    corrs=apply(Usubc[,corr_region_ind,drop=F], 1, function(x)
+      sum((as.numeric(x)-1)*(as.numeric(priorsc[corr_region_ind])-1)))#/(sqrt(sum((as.numeric(x)-1)^2))*sqrt(sum((as.numeric(priors[])-1)^2))))
     #cor(as.numeric(priors),x)) ###c
     corrs[is.na(corrs)]=0
     corrs=corrs/max(corrs)
