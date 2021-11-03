@@ -28,6 +28,10 @@ EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, gtf=NULL, celltype
     gtf[,1]=paste0('chr', gtf[,1])
   }
 
+  if(is.null(celltype0)){
+    celltype0=cbind(barcodes[,1], rep("normal", nrow(barcodes)))
+  }
+
   colnames(mtx)=barcodes[,1]
   rownames(mtx)=features[,1]
   celltypes=celltype0
@@ -57,7 +61,7 @@ EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, gtf=NULL, celltype
   if(is.null(seg_table_filtered)){
     message("Estimation for each chromosome")
     seg_table_filtered0=data.frame("chr"=gsub("chr","",size[1:22,1]), 'start'=0, 'end'=as.numeric(size[1:22,2]),
-                                  'states'=0, 'length'=as.numeric(size[1:22,2]),'mean'=0, 'var'=0, 'Var1'=1:22,'Freq'=50000,'chrr'=size[1:22,1], stringsAsFactors = F)
+                                   'states'=0, 'length'=as.numeric(size[1:22,2]),'mean'=0, 'var'=0, 'Var1'=1:22,'Freq'=50000,'chrr'=size[1:22,1], stringsAsFactors = F)
   }
 
   deltas_all=list()
@@ -192,7 +196,7 @@ EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, gtf=NULL, celltype
 
   seg_table_filtered=seg_table_filtered[which(seg_table_filtered$chrr %in% sel_ind),, drop=F]
 
-  return(list(deltas_all=deltas_all, ngenes=ngenes, seg_table_filtered=seg_table_filtered))
+  return(list(deltas_all=deltas_all, ngenes=ngenes, seg_table_filtered=seg_table_filtered, alpha=alphas))
 }
 
 
