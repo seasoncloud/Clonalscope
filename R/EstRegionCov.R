@@ -3,7 +3,7 @@
 #' @param mtx A (sparse) matrix with each row being a feature and each column being a cell barcode. (Output from cellranger)
 #' @param barcodes A matrix/ data.frame with barcodes for each cell in the first column.
 #' @param features A matrix/ data.frame with the columns- 1st: gendID; 2nd: gene name. Each row is a feature whose order should correspond to the rows of "mtx".
-#' @param gtf A gtf file. The gene IDs in "features" should be found in the gtf file.
+#' @param bed A matrix with the bed file format. COL1- chromosome; COL2- start coordinate; COL3- end coordinate; COL4- the gene ID matches the one in "features".
 #' @param celltype0 A matrix with two columns: COL1- cell barcodes; COL2- cell types (Tumor cells should be labeled as "tumor" and the set of cells used as control should be labeled as "normal").
 #' @param var_pt A decimal between [0,1]. Exclude the extremely variable genes with variance > the var_pt percentile for the tested cells.
 #' @param var_pt_ctrl A decimal between [0,1]. Exclude the extremely variable genes with variance > the var_pt percentile for the control cells.
@@ -20,12 +20,12 @@
 #' @import rtracklayer
 #' @import Matrix
 #' @export
-EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, gtf=NULL, celltype0=NULL, var_pt=0.99, var_pt_ctrl=0.99,ngene_filter=0, include='tumor',
+EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltype0=NULL, var_pt=0.99, var_pt_ctrl=0.99,ngene_filter=0, include='tumor',
                       alpha_source='all', ctrl_region=NULL, seg_table_filtered=NULL,size=NULL, plot_path=NULL, breaks=30){
   ## test
-  ## check gtf with "chr"
-  if(!grepl("chr",gtf[1,1])){
-    gtf[,1]=paste0('chr', gtf[,1])
+  ## check bed with "chr"
+  if(!grepl("chr",bed[1,1])){
+    bed[,1]=paste0('chr', bed[,1])
   }
 
   if(is.null(celltype0)){
@@ -47,8 +47,8 @@ EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, gtf=NULL, celltype
   rna_control=mtx[which(rna_var<quantile(rna_var,var_pt_ctrl) & (rna_var!=0) & ngenes>ngene_filter), ]
 
 
-  gtf_sub=gtf[match(rownames(rna), gtf$gene_id),]
-  gtf_sub[is.na(gtf_sub)]=0
+  bed_sub=bed[match(rownames(rna), bed[,4]),, drop=F]
+  bed_sub[is.na(bed_sub)]=0
 
 
   #include # 'control', "all" for cells "include"
@@ -77,11 +77,11 @@ EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, gtf=NULL, celltype
 
   for(chrr in paste0(seg_table_filtered$chrr)){
     #chrr=c('chr8')
-    #gene_ind=which(gtf_sub$V1 %in% chrr)
+    #gene_ind=which(bed_sub$V1 %in% chrr)
     query=GRanges(seqnames = paste0('chr',seg_table_filtered$chr[which(seg_table_filtered$chrr==chrr)]),
                   ranges = IRanges(as.numeric(seg_table_filtered$start[which(seg_table_filtered$chrr==chrr)]),
                                    as.numeric(seg_table_filtered$end[which(seg_table_filtered$chrr==chrr)])))
-    subject=GRanges(seqnames = gtf_sub$V1, ranges=IRanges(start=as.numeric(gtf_sub$V4), end=as.numeric(gtf_sub$V5)))
+    subject=GRanges(seqnames = bed_sub[,1], ranges=IRanges(start=as.numeric(bed_sub[,2]), end=as.numeric(bed_sub[,3])))
     ov=as.matrix(findOverlaps(query=query, subject = subject))
     gene_ind=ov[,2]
 
@@ -129,7 +129,7 @@ EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, gtf=NULL, celltype
       alphas=Matrix::colSums(rna_control[,sel_cell, drop=F])
     }else if(alpha_source=='control'){
       # from control region
-      rna_chr1=rna[which(gtf_sub$V1 %in% ctrl_region), , drop=F]
+      rna_chr1=rna[which(bed_sub[,1] %in% ctrl_region), , drop=F]
       alphas=Matrix::colSums(rna_chr1[,sel_cell, drop=F])
     }else{
       stop("alpha_source is not valid!")

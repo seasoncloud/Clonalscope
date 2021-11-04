@@ -4,14 +4,16 @@
 #' @param celltype A matrix with 2+ columns: COL1- cell barcodes; COL2+- cell types and other information for plotting.
 #' @param Zest Estimated cell cluster identity from the BayesNonparCluster estimation.The order should be the same as that of the input matrix.
 #' @param mode Character. Mode used to color the cells in the UMAP. The value should be one of ["celltype","Zest", "annot"].
+#' @param UMAP_coor A matrix with 2 columns for each cell. The order of the rows should be the same as that of df.
 #' @param maxv Numeric. Set the ceiling number for plotting.
+#' @param size Numeric. Point size for geom_point in ggplot2.
 #'
 #' @return A UMAP showing the result from the Bayesian non-parametric clustering.
 #'
 #' @import pheatmap
 #' @import uwot
 #' @export
-PlotUMAP=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="Zest",  maxv=3, size=1){
+PlotUMAP=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="Zest", UMAP_coor=NULL, maxv=3, size=1){
   library(pheatmap)
   Zest=Assign_obj$Zest
   #corrs=Assign_obj$corrs
@@ -79,7 +81,13 @@ PlotUMAP=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="Zest",  maxv=3,
     ann_colors[[colnames(celltype0)[ii]]]=col_use
   }
 
+  if(is.null(UMAP_coor)){
   umap_emb=uwot::umap(df2)#,
+  }else if(ncol(UMAP_coor)==2){
+  umap_emb=UMAP_coor
+  }else{
+  stop("Please specify a valid UMAP_coor.")
+}
 
   emb=data.frame(#TSNE1=tsne_emb[,1], TSNE2=tsne_emb[,2],
     UMAP1=umap_emb[,1], UMAP2=umap_emb[,2],
@@ -107,6 +115,8 @@ PlotUMAP=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="Zest",  maxv=3,
   }
 
   plot(pp) ###
+
+  return(emb)
 
 
 }

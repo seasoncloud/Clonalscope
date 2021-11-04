@@ -1,4 +1,4 @@
-RunCovCluster=function(mtx=NULL, barcodes=NULL, features=NULL, gtf=NULL, celltype0=NULL, var_pt=0.99, var_pt_ctrl=0.99, include='tumor',
+RunCovCluster=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltype0=NULL, var_pt=0.99, var_pt_ctrl=0.99, include='tumor',
                        alpha_source='all', ctrl_region=NULL, seg_table_filtered=NULL,size=NULL, dir_path=NULL, breaks=50,
                        ngene_filter=150, est_cap=3, alpha=2, beta=2, niter=200,
                        sigmas0=NULL, U0=NULL, Z0=NULL, seed=200, clustering0=NULL,
@@ -16,7 +16,7 @@ RunCovCluster=function(mtx=NULL, barcodes=NULL, features=NULL, gtf=NULL, celltyp
   if( Est_read1==TRUE){# | !("deltas_allseg.rds" %in% list.files(paste0(dir_path,"rds")))){
     deltas_all=readRDS(paste0(dir_path, "/deltas_allseg.rds"))
   }else{
-    deltas_all=EstRegionCov(mtx=mtx, barcodes=barcodes, features=features, gtf=gtf, celltype0=celltype0, var_pt=var_pt, var_pt_ctrl=var_pt_ctrl, include=include,
+    deltas_all=EstRegionCov(mtx=mtx, barcodes=barcodes, features=features, bed=bed, celltype0=celltype0, var_pt=var_pt, var_pt_ctrl=var_pt_ctrl, include=include,
                             alpha_source=alpha_source, ctrl_region=ctrl_region, seg_table_filtered=Obj_filtered$seg_table_filtered, size=size,
                             plot_path=plot_path, breaks=breaks)
 
@@ -85,7 +85,7 @@ RunCovCluster=function(mtx=NULL, barcodes=NULL, features=NULL, gtf=NULL, celltyp
     if( Est_read2==TRUE & paste0("deltas_allseg_updated",tmp,".rds") %in% list.files(dir_path)){# | !("deltas_allseg.rds" %in% list.files(paste0(dir_path,"rds")))){
       deltas_all=readRDS(paste0(dir_path, "/deltas_allseg_updated",tmp,".rds"))
     }else{
-      deltas_all=EstRegionCov(mtx=mtx, barcodes=barcodes, features=features, gtf=gtf, celltype0=celltype0, var_pt=var_pt, var_pt_ctrl=var_pt_ctrl, include=include,
+      deltas_all=EstRegionCov(mtx=mtx, barcodes=barcodes, features=features, bed=bed, celltype0=celltype0, var_pt=var_pt, var_pt_ctrl=var_pt_ctrl, include=include,
                               alpha_source=alpha_source, ctrl_region=ctrl_region, seg_table_filtered=Obj_filtered$seg_table_filtered, size=size,
                               plot_path=plot_path2, breaks=breaks)
 
