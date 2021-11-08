@@ -2,7 +2,7 @@ RunCovCluster=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltyp
                        alpha_source='all', ctrl_region=NULL, seg_table_filtered=NULL,size=NULL, dir_path=NULL, breaks=50,
                        ngene_filter=150, est_cap=3, alpha=2, beta=2, niter=200,
                        sigmas0=NULL, U0=NULL, Z0=NULL, seed=200, clustering0=NULL,
-                       threshold_2nd=-0.4, burnin=NULL, thinning=1 ,mincell = 20, cutoff = 0.3,
+                       threshold_2nd=-0.4, burnin=NULL, thinning=1 ,mincell = 20, cutoff = 0.5,
                        Est_read1=FALSE,Est_read2=FALSE, Clust_read1=FALSE, Clust_read2=FALSE){
 
   plot_path=paste0(dir_path,"/cov_hist.pdf")
@@ -139,5 +139,7 @@ RunCovCluster=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltyp
   }
 
   result_all[['celltype0']]=celltype0
+  ll=sort(as.numeric(gsub("result","",names(Cov_obj)[grepl("result", names(Cov_obj))])))[length(names(Cov_obj)[grepl("result", names(Cov_obj))])]
+  result_all[['result_final']]=result_all[[paste0('result',ll )]]
   return(result_all)
 }
