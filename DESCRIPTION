@@ -1,7 +1,7 @@
 Package: scRNACNV
 Type: Package
 Title: Copy number calling for scRNA-seq data paired with WGS/WES
-Version: 0.1.0
+Version: 1.0.0
 Author: Chi-Yun Wu, Nancy Zhang
 Maintainer: Chi-Yun Wu <chiyunwu@pennmedicine.upenn.edu>
 Description: More about what it does (maybe more than one line)

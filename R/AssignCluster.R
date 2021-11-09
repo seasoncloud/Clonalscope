@@ -30,13 +30,13 @@ AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.3, allele=FALSE, c
     Usub[kk,]=meanX
   }
 
-  sigmas=sqrt(1/(N-length(ind_cell))*colSums((Xir[-ind_cell,]-Usub[Zest[-ind_cell],])^2))
+  sigmas=sqrt(1/(N-length(ind_cell))*colSums((Xir[-ind_cell,]-Usub[Zest[-ind_cell],])^2, na.rm = T))
 
   ## Reassign cells not in the current clusters to one of the current cluster
   for(ii in ind_cell){
     P=rep(NA, nrow(Usub))
-    P[ind_clusters]=apply(Usub[ind_clusters,, drop=F],1, function(x) sum(dnorm(Xir[ii,], x, sigmas, log=T)))
-    P[ind_clusters]=P[ind_clusters]-max(P[ind_clusters])
+    P[ind_clusters]=apply(Usub[ind_clusters,, drop=F],1, function(x) sum(dnorm(as.numeric(Xir[ii,]), x, sigmas, log=T), na.rm = T))
+    P[ind_clusters]=P[ind_clusters]-max(P[ind_clusters], na.rm = T)
     #Zest[ii]=which.max(P)
     P[is.na(P)]=min(P, na.rm = T)-100
     P=exp(P)
@@ -53,7 +53,7 @@ AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.3, allele=FALSE, c
   colnames(Usub)=paste0("R",1:ncol(Usub))
   rownames(Usub)=paste0("Cluster", 1:nrow(Usub))
 
-  sigmas=sqrt(1/(N)*colSums((Xir-Usub[Zest,])^2))
+  sigmas=sqrt(1/(N)*colSums((Xir-Usub[Zest,])^2, na.rm = T))
 
   ## order clusters and classify normal/tumor cells
   if(is.null(cna_states_WGS)){
@@ -143,7 +143,7 @@ AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.3, allele=FALSE, c
   return(list(Zest=Zest, corrs=corrs[Zest], annot=annot[Zest],Uest=Usub, sigmas_est=sigmas, Zmaj= maj_vote, cutoff=cutoff, U0=cluster_obj$priors$U0,  wU0=cluster_obj$priors$wU0))
 
 
-  }else{
+  }else{  ### allele
 
     R=ncol(cluster_obj$priors$U0)
     Zest=cluster_obj$results$Zall

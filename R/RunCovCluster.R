@@ -56,7 +56,7 @@ RunCovCluster=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltyp
     clustering=BayesNonparCluster(Xir=df2, cna_states_WGS =cna_states_WGS , alpha=alpha, beta=beta, niter = niter , sigmas0 =  sigmas0, U0 = U0 , Z0 = Z0 , seed = seed)
     saveRDS(clustering,paste0(dir_path, "/nonpara_clustering.rds"))
   }
-  clustering2=MCMCtrim(clustering)
+  clustering2=MCMCtrim(clustering, burnin = burnin, thinning = thinning)
 
   result=AssignCluster(clustering2, mincell = mincell, cutoff = cutoff)
   Zest=result$Zest
@@ -139,7 +139,7 @@ RunCovCluster=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltyp
   }
 
   result_all[['celltype0']]=celltype0
-  ll=sort(as.numeric(gsub("result","",names(Cov_obj)[grepl("result", names(Cov_obj))])))[length(names(Cov_obj)[grepl("result", names(Cov_obj))])]
+  ll=sort(as.numeric(gsub("result","",names(result_all)[grepl("result", names(result_all))])))[length(names(result_all)[grepl("result", names(result_all))])]
   result_all[['result_final']]=result_all[[paste0('result',ll )]]
   return(result_all)
 }

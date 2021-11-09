@@ -89,7 +89,7 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=
   if(is.null(Z0)){
     PP=matrix(0, ncol=nrow(U0), nrow=nrow(Xir))
     for(ii in 1:nrow(U0)){
-      pp=apply(Xir,1, function(x) sum(dnorm(x, U0[ii,],sigmas0, log = T)))
+      pp=apply(Xir,1, function(x) sum(dnorm(x, U0[ii,],sigmas0, log = T), na.rm = T))
       PP[,ii]=pp
     }
     Z0=apply(PP, 1, function(x) which.max(x))
@@ -117,7 +117,7 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=
   #rownames(U0)=paste0("Cluster", 1:nrow(U0))
 
   # initialization
-  L0=sum(sapply(1:N, function(x) sum(dnorm(Xir[x,], U0[Z0, , drop=F][x,],sd=sigmas0, log = T))))
+  L0=sum(sapply(1:N, function(x) sum(dnorm(as.numeric(Xir[x,]), U0[Z0, , drop=F][x,],sd=sigmas0, log = T), na.rm = T)))
   LL=numeric(niter)
   Uall=vector("list",niter)
   sigma_all=vector("list", niter)
@@ -177,10 +177,10 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=
       #p_k= sapply(1:nrow(Ut), function(x) prod(dnorm(Xir[ii,],mean=Ut[x,], sd=sigmas , log = F)))*npoints_percluster
       #p_new=prod(dnorm(Xir[ii,], mean=mu_new,sd=sigmas, log=F))*beta
 
-      p_k0= sapply((1:nrow(Ut))[which(npoints_percluster!=0)], function(x) sum(weights*dnorm(Xir[ii,],mean=Ut[x,], sd=sigmas , log = T)))+
+      p_k0= sapply((1:nrow(Ut))[which(npoints_percluster!=0)], function(x) sum(weights*dnorm(as.numeric(Xir[ii,]),mean=Ut[x,], sd=sigmas , log = T), na.rm = T))+
         #sapply(1:nrow(Ut), function(x) sum(dnorm(Xir_allele[ii,],mean=mu[Ut[x,],2], sd=sigmas_allele , log = T)))+
         log(npoints_percluster[which(npoints_percluster!=0)])
-      p_new0=sum(weights*dnorm(Xir[ii,], mean=mu_new,sd=sigmas, log=T))+
+      p_new0=sum(weights*dnorm(as.numeric(Xir[ii,]), mean=mu_new,sd=sigmas, log=T), na.rm = T)+
         #sum(dnorm(Xir_allele[ii,], mean=mu[mu_new,2],sd=sigmas_allele, log=T))+
         log(beta)
 
@@ -227,7 +227,7 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=
     sigma_all[[tt]]=sigmas
 
 
-    LL[tt]=sum(sapply(1:N, function(x) sum(weights*dnorm(Xir[x,], Ut[Zt, , drop=F][x,],sd=sigmas, log = T))))
+    LL[tt]=sum(sapply(1:N, function(x) sum(weights*dnorm(as.numeric(Xir[x,]), Ut[Zt, , drop=F][x,],sd=sigmas, log = T), na.rm = T)))
     print(paste0("Iteration:", tt))
     print(paste0("nclusters=",nrow(Ut)))
     print(table(Zt))
@@ -251,7 +251,7 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=
   sigma_all[[tt]]=sigmas
 
 
-  LL[tt]=sum(sapply(1:N, function(x) sum(weights*dnorm(Xir[x,], Ut[Zt, , drop=F][x,],sd=sigmas, log = T))))
+  LL[tt]=sum(sapply(1:N, function(x) sum(weights*dnorm(as.numeric(Xir[x,]), Ut[Zt, , drop=F][x,],sd=sigmas, log = T), na.rm = T)))
 
 
 
