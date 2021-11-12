@@ -1,7 +1,7 @@
 #' Plot clustering result from the BayesNonparCluster estimation.
 #'
 #' @param df A matrix/data.frame with each row being a cell and each column being a segment (from the WES/WGS). The values are the estimated fold change for each cell in each reion (from EstRegionCov).
-#' @param celltype A matrix with 2+ columns: COL1- cell barcodes; COL2+- cell types and other information for plotting.
+#' @param celltype A matrix with 2+ columns: COL1- cell barcodes; COL2 cell types and COL2+ other information for plotting.
 #' @param Zest Estimated cell cluster identity from the BayesNonparCluster estimation.The order should be the same as that of the input matrix.
 #' @param mode Character for the mode of heatmap to plot. The value should be one of ["segment","genome"]."segment": plot each segment with equal length; "genome": genome view for each segment.
 #' @param maxv Numeric. Set the ceiling number for plotting.
@@ -26,7 +26,7 @@ PlotClusters=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="segment", c
       U0=U0[1,, drop=F]
     }
 
-    corrs=round(corrs,3)
+    corrs=round(corrs,6)
     #corrs=(corrs-min(corrs))/(max(corrs)-min(corrs))
 
     #celltype=cbind(celltype[,1:2], as.character(Zest)[match(celltype[,1],rownames(df))])
@@ -39,9 +39,9 @@ PlotClusters=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="segment", c
 
     colnames(celltype)=c(colnames(celltype)[1:(ncol(celltype)-3)],"annot", "Zest","corr")
     df2=apply(df, c(2), function(x) pmin(x, maxv))
-    celltype_cluster=celltype[,(ncol(celltype)), drop=F]
+    celltype_cluster=celltype[,c(2,ncol(celltype)), drop=F]
     rownames(celltype_cluster)=celltype[,1]
-    od=order(as.numeric(celltype_cluster[,1]), decreasing = F)
+    od=order(as.numeric(celltype_cluster[,2]),celltype_cluster[,1], decreasing = F)
 
 
     df2=df2[od,, drop=F]
@@ -87,11 +87,11 @@ PlotClusters=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="segment", c
         }else{
           cols0=(celltype0[,ii])}
         new_indc=which(! names(table(cols0)) %in% as.character(1:max(which(!is.na(U0[,1])))))
-        if((length(new_indc)+length(1:max(which(!is.na(U0[,1])))))>20){
+        if((length(new_indc)+length(which(!is.na(U0[,1]))))>20){  ##
           col_use=c(colors()[c(609, 536, 62, 652, 611, 463, 498, 71, 258, 84, 56, 26, 154, 59, 134, 78, 116, 85, 20, 259)],
-                    colors()[sample(1:length(colors())[-c(609, 536, 62, 652, 611, 463, 498, 71, 258, 84, 56, 26, 154, 59, 134, 78, 116, 85, 20, 259)],(length(new_indc)+length(1:max(which(!is.na(U0[,1])))))-20)])
+                    colors()[sample(1:length(colors())[-c(609, 536, 62, 652, 611, 463, 498, 71, 258, 84, 56, 26, 154, 59, 134, 78, 116, 85, 20, 259)],(length(new_indc)+length(which(!is.na(U0[,1]))))-20)])
         }else{
-          col_use=c(colors()[c(609, 536, 62, 652, 611, 463, 498, 71, 258, 84, 56, 26, 154, 59, 134, 78, 116, 85, 20, 259)])[1:(length(new_indc)+length(1:max(which(!is.na(U0[,1])))))]
+          col_use=c(colors()[c(609, 536, 62, 652, 611, 463, 498, 71, 258, 84, 56, 26, 154, 59, 134, 78, 116, 85, 20, 259)])[1:(length(new_indc)+length(which(!is.na(U0[,1]))))]
         }
         names(col_use)=as.character(c(which(!is.na(U0[,1])), names(table(cols0))[new_indc]))
         col_use=col_use[which(names(col_use) %in% names(table(cols0)))]
@@ -196,9 +196,9 @@ PlotClusters=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="segment", c
 
     colnames(celltype)=c(colnames(celltype)[1:(ncol(celltype)-3)],"annot", "Zest","corr")
     df2_cov=apply(df_cov, c(2), function(x) pmin(x, maxv))
-    celltype_cluster=celltype[,(ncol(celltype)), drop=F]
+    celltype_cluster=celltype[,c(2,ncol(celltype)), drop=F]
     rownames(celltype_cluster)=celltype[,1]
-    od=order(as.numeric(celltype_cluster[,1]), decreasing = F)
+    od=order(as.numeric(celltype_cluster[,2]),celltype_cluster[,1], decreasing = F)
     df2_cov=df2_cov[od,, drop=F]
     celltype_cluster=celltype_cluster[od,, drop=F]
     celltype_cluster=data.frame(celltype_cluster, stringsAsFactors = F)
@@ -229,11 +229,11 @@ PlotClusters=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="segment", c
         }else{
           cols0=(celltype0[,ii])}
         new_indc=which(! names(table(cols0)) %in% as.character(1:max(which(!is.na(U0[,1])))))
-        if((length(new_indc)+length(1:max(which(!is.na(U0[,1])))))>20){
+        if((length(new_indc)+(length(which(!is.na(U0[,1])))))>20){
           col_use=c(colors()[c(609, 536, 62, 652, 611, 463, 498, 71, 258, 84, 56, 26, 154, 59, 134, 78, 116, 85, 20, 259)],
-                    colors()[sample(1:length(colors())[-c(609, 536, 62, 652, 611, 463, 498, 71, 258, 84, 56, 26, 154, 59, 134, 78, 116, 85, 20, 259)],(length(new_indc)+length(1:max(which(!is.na(U0[,1])))))-20)])
+                    colors()[sample(1:length(colors())[-c(609, 536, 62, 652, 611, 463, 498, 71, 258, 84, 56, 26, 154, 59, 134, 78, 116, 85, 20, 259)],(length(new_indc)+length((which(!is.na(U0[,1])))))-20)])
         }else{
-          col_use=c(colors()[c(609, 536, 62, 652, 611, 463, 498, 71, 258, 84, 56, 26, 154, 59, 134, 78, 116, 85, 20, 259)])[1:(length(new_indc)+length(1:max(which(!is.na(U0[,1])))))]
+          col_use=c(colors()[c(609, 536, 62, 652, 611, 463, 498, 71, 258, 84, 56, 26, 154, 59, 134, 78, 116, 85, 20, 259)])[1:(length(new_indc)+length(which(!is.na(U0[,1]))))]
         }
         names(col_use)=as.character(c(which(!is.na(U0[,1])), names(table(cols0))[new_indc]))
         col_use=col_use[which(names(col_use) %in% names(table(cols0)))]

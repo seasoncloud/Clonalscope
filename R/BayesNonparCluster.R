@@ -87,11 +87,12 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=
   # Z0[which(P0<P1)]=2
 
   if(is.null(Z0)){
-    PP=matrix(0, ncol=nrow(U0), nrow=nrow(Xir))
-    for(ii in 1:nrow(U0)){
+    PP=matrix(NA, ncol=nrow(U0), nrow=nrow(Xir))
+    for(ii in  which(!is.na(U0[,1]))){ ###
       pp=apply(Xir,1, function(x) sum(dnorm(x, U0[ii,],sigmas0, log = T), na.rm = T))
       PP[,ii]=pp
     }
+    
     Z0=apply(PP, 1, function(x) which.max(x))
   }else if(length(Z0)!=N){
     stop("Please specify a vector with length the same as the number of cells!")

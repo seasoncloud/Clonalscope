@@ -28,6 +28,7 @@ PrepCovMatrix=function(deltas_all=NULL, ngene_filter=200, ncell_filter=NULL){
   })
   
   df=data.frame(df, stringsAsFactors = F)
+  rownames(df)=cell_intersect
   colnames(df)=sapply(strsplit(colnames(df),"alphaall"),'[',2)
   
   df=df[,which(ngenes>ngene_filter)]
