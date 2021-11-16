@@ -218,7 +218,9 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=
       }
       Ut[kk,]=muX
     }
-    sigmas=sqrt(1/(N)*colSums((Xir-Ut[Zt,])^2))
+    #sigmas=sqrt(1/(N)*colSums((Xir-Ut[Zt,])^2, na.rm = T))
+    sigmas=sqrt((1/colSums(!is.na(Xir)))*colSums((Xir-Ut[Zt,])^2, na.rm = T))
+    
     #sigmas=rep(0.3, length(sigmas))
     #sigmas=pmax(sigmas, 0.2)
     colnames(Ut)= names(sigmas)=paste0("R", 1:R)
@@ -243,8 +245,9 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=
     meanX[is.na(meanX)]=0
     Ut[kk,]=meanX
   }
-
-  sigmas=sqrt(1/(N)*colSums((Xir-Ut[Zt,])^2))
+  
+  #sigmas=sqrt(1/(N)*colSums((Xir-Ut[Zt,])^2, na.rm = T))
+  sigmas=sqrt((1/colSums(!is.na(Xir)))*colSums((Xir-Ut[Zt,])^2, na.rm = T))
   colnames(Ut)= names(sigmas)=paste0("R", 1:R)
   rownames(Ut)=paste0('Cluster',1:nrow(Ut))
   Uall[[tt]]=Ut

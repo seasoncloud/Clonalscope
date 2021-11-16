@@ -33,7 +33,7 @@ RunCovCluster=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltyp
   if(is.null(mincell)){
     if(nrow(df)<500){
       mincell=5
-    }else if(nrow(df)<1000){
+    }else if(nrow(df)<1500){
       mincell=10
     }else{
       mincell=20

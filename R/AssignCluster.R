@@ -11,6 +11,7 @@ AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.3, allele=FALSE, c
   #if(is.null(corr_region_ind)){
     corr_region_ind=1:R
   #}
+  #print(corr_region_ind)
 
   ## take majority vote
   set.seed(100)
@@ -82,8 +83,17 @@ AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.3, allele=FALSE, c
   # }
 
   #ind_cna=which(priors != 1)
-  corrs=apply(Usub[,corr_region_ind,drop=F], 1, function(x)
-  sum((as.numeric(x)-1)*(as.numeric(priors[corr_region_ind])-1)))#/(sqrt(sum((as.numeric(x)-1)^2))*sqrt(sum((as.numeric(priors[])-1)^2))))
+  Usub2=apply(Usub,2, function(x) pmin(x,1.5))
+  #Usub2=apply(Usub,2, function(x) pmax(x,0.5))
+  corrs=apply(Usub2[,corr_region_ind,drop=F], 1, function(x){
+  tmp=sort((as.numeric(x)-1)*(as.numeric(priors[corr_region_ind])-1))
+  if(length(tmp)==0){
+    return(NA)
+  }else{
+  #return(sum(tmp[2:(length(tmp)-1)]))
+    return(sum(tmp))}
+  }
+  )#/(sqrt(sum((as.numeric(x)-1)^2))*sqrt(sum((as.numeric(priors[])-1)^2))))
   #cor(as.numeric(priors),x)) ###c
   corrs[is.na(corrs)]=0
   corrs=corrs/max(corrs)
@@ -154,10 +164,9 @@ AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.3, allele=FALSE, c
     Xir_allele=cluster_obj$data$Xir_allele
     N=nrow(Xir_cov)
 
-    if(is.null(corr_region_ind)){
+    #if(is.null(corr_region_ind)){
       corr_region_ind=1:R
-    }
-
+    #}
     ## take majority vote
     set.seed(100)
     maj_vote=apply(Zest, 2, function(x) which.max(table(x)[as.character(1:max(as.numeric(cluster_obj$results$Zall)))]))
