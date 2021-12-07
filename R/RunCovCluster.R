@@ -1,6 +1,6 @@
 RunCovCluster=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltype0=NULL, var_pt=0.99, var_pt_ctrl=0.99, include='tumor',
                        alpha_source='all', ctrl_region=NULL, seg_table_filtered=NULL,size=NULL, dir_path=NULL, breaks=50,
-                       ngene_filter=150, prep_mode='union', est_cap=3, alpha=2, beta=2, niter=200,
+                       ngene_filter=150, prep_mode='intersect', est_cap=3, alpha=2, beta=2, niter=200,
                        sigmas0=NULL, U0=NULL, Z0=NULL, seed=200, clustering0=NULL,result0=NULL,
                        threshold_2nd=-0.3, burnin=NULL, thinning=1 ,mincell = NULL, cutoff = 0.5,
                        Est_read1=FALSE,Est_read2=FALSE, Clust_read1=FALSE, Clust_read2=FALSE){

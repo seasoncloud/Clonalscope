@@ -1,4 +1,4 @@
-PrepCovMatrix=function(deltas_all=NULL, ngene_filter=200, ncell_filter=NULL, prep_mode='union'){
+PrepCovMatrix=function(deltas_all=NULL, ngene_filter=200, ncell_filter=NULL, prep_mode='intersect'){
   ## library required
   library(Matrix)
   df=deltas_all$deltas_all
