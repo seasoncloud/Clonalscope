@@ -110,6 +110,7 @@ EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltype
     # celltypes=celltypes[sel_cell,]
 
     #
+    barcodes_normal=colnames(rna_sub)[which(celltypes[,2]=='normal')]
     controlCounts=as.matrix(rna_sub[,which(celltypes[,2]=='normal'), drop=F])
     if(include=='tumor'){
       testCounts=as.matrix(rna_sub[,which(celltypes[,2]=='tumor'), drop=F])
@@ -165,13 +166,19 @@ EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltype
         #c1 <- rgb(255,192,203, max = 255, alpha = 50, names = "lt.pink")
         c1 <- rgb(239,90,155, max = 255, alpha = 50, names = "lt.pink")
         ha=hist(deltas[which(celltype_tmp=='tumor')],breaks = breaks, plot=FALSE)
-        if(length(unique(celltype_tmp))>1){
+        #if(length(unique(celltype_tmp))>1){
           hb=hist(deltas[which(celltype_tmp=='normal')],breaks = breaks, plot = FALSE)
-        }
+        #}
         plot(ha, xlim=c(0,3), main=paste0(chrr, ":", nrow(controlCounts), " genes; ", length(deltas), " cells"), col=c1)
-        if(length(unique(celltype_tmp))>1){
+        #if(length(unique(celltype_tmp))>1){
           plot(hb, add=TRUE, col=c2)
-        }
+        #}
+      }else if(length(which(celltype_tmp=='tumor'))<1 & length(which(celltype_tmp=='normal'))>1){
+        hb=hist(deltas[which(celltype_tmp=='normal')],breaks = breaks, plot = FALSE)
+        plot(hb, xlim=c(0,3), main=paste0(chrr, ":", nrow(controlCounts), " genes; ", length(deltas)))
+      }else if(length(which(celltype_tmp=='tumor'))>1 & length(which(celltype_tmp=='normal'))<1){
+        hb=hist(deltas[which(celltype_tmp=='tumor')],breaks = breaks, plot = FALSE)
+        plot(hb, xlim=c(0,3), main=paste0(chrr, ":", nrow(controlCounts), " genes; ", length(deltas)))
       }
     }
     ##
@@ -196,7 +203,7 @@ EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltype
 
   seg_table_filtered=seg_table_filtered[which(seg_table_filtered$chrr %in% sel_ind),, drop=F]
 
-  return(list(deltas_all=deltas_all, ngenes=ngenes, seg_table_filtered=seg_table_filtered, alpha=alphas))
+  return(list(deltas_all=deltas_all, ngenes=ngenes, seg_table_filtered=seg_table_filtered, alpha=alphas, barcodes_normal=barcodes_normal))
 }
 
 

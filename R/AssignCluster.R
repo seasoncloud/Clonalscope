@@ -1,4 +1,4 @@
-AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.3, allele=FALSE, cna_states_WGS=NULL, rm_extreme=F){
+AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.3, allele=FALSE, cna_states_WGS=NULL, rm_extreme=F, cap_corr=1.5){
 
   if(allele==FALSE){
     ## set values
@@ -51,7 +51,8 @@ AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.3, allele=FALSE, c
       meanX[is.na(meanX)]=0
       Usub[kk,]=meanX
     }
-    colnames(Usub)=paste0("R",1:ncol(Usub))
+    #colnames(Usub)=paste0("R",1:ncol(Usub))
+    colnames(Usub)=colnames(Xir)
     rownames(Usub)=paste0("Cluster", 1:nrow(Usub))
 
     sigmas=sqrt(1/(N)*colSums((Xir-Usub[Zest,])^2, na.rm = T))
@@ -67,11 +68,11 @@ AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.3, allele=FALSE, c
       #priors=Usub[as.numeric(names(table(Zest)))[which.max(table(Zest))],]
     }
 
-    mu=NULL
-    for(ii in 1:6){
-      mu_tmp=c(rep(0.5*ii,ii+1),c(0,( (1:(ii))/ii)))
-      mu=rbind(mu, matrix(mu_tmp, byrow=F, ncol=2))
-    }
+    # mu=NULL
+    # for(ii in 1:6){
+    #   mu_tmp=c(rep(0.5*ii,ii+1),c(0,( (1:(ii))/ii)))
+    #   mu=rbind(mu, matrix(mu_tmp, byrow=F, ncol=2))
+    # }
 
 
 
@@ -83,7 +84,18 @@ AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.3, allele=FALSE, c
     # }
 
     #ind_cna=which(priors != 1)
-    Usub2=apply(Usub,2, function(x) pmin(x,1.5))
+    Usub2=apply(Usub,2, function(x) pmin(x, cap_corr))
+    #Usub2=apply(Usub,2, function(x) pmax(x,0.8))
+    # Usub2=apply(Usub, c(1,2), function(x){
+    #   if(is.na(x)){
+    #     return(NA)
+    #   }else if(x>1){return(1.5)
+    #   }else if(x<1){
+    #       return(0.5)
+    #   }else if(x==1){
+    #       return(1)
+    #   }
+    # })
     #Usub2=apply(Usub,2, function(x) pmax(x,0.5))
     corrs=apply(Usub2[,corr_region_ind,drop=F], 1, function(x){
       tmp=sort((as.numeric(x)-1)*(as.numeric(priors[corr_region_ind])-1))
@@ -91,13 +103,23 @@ AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.3, allele=FALSE, c
         return(NA)
       }else{
         if(rm_extreme==T){
-          return(sum(tmp[2:(length(tmp)-1)]))
+          # if(sum(tmp[2:(length(tmp)-1)])/(length(which(as.numeric(priors[corr_region_ind])!=1))-2)<0.1){
+          #   warning("WGS and scRNA do not match well. annot might not be accurate!")
+          # }
+          # return(sum(tmp[2:(length(tmp)-1)]))
         }else{
+          # if(sum(tmp)/(length(which(as.numeric(priors[corr_region_ind])!=1)))<0.1){
+          #   warning("WGS and scRNA do not match well. annot might not be accurate!")
+          # }
           return(sum(tmp))}}
     }
     )#/(sqrt(sum((as.numeric(x)-1)^2))*sqrt(sum((as.numeric(priors[])-1)^2))))
     #cor(as.numeric(priors),x)) ###c
+
     corrs[is.na(corrs)]=0
+    if(max(corrs, na.rm = T)/(length(which(as.numeric(priors[corr_region_ind])!=1)))<0.1){
+      warning("WGS and scRNA do not match well. annot might not be accurate!")
+    }
     corrs=corrs/max(corrs)
 
     #if(dist=='correlation'){
@@ -233,7 +255,8 @@ AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.3, allele=FALSE, c
       gt=sapply(1:ncol(Xir_cov), function(x) genotype_neighbor(cbind(meanXcov[x], meanXallele[x]),maxcp = 6 ))
       Usub[kk,]=gt
     }
-    colnames(Usubc)=colnames(Usuba)=colnames(Usub)=paste0("R",1:ncol(Usubc))
+    #colnames(Usubc)=colnames(Usuba)=colnames(Usub)=paste0("R",1:ncol(Usubc))
+    colnames(Usubc)=colnames(Usuba)=colnames(Usub)=colnames(Xir)
     rownames(Usubc)=rownames(Usuba)=rownames(Usub)=paste0("Cluster", 1:nrow(Usubc))
 
 

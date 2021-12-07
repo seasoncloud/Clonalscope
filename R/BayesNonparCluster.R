@@ -25,6 +25,7 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=
   R=ncol(Xir)
   Xir=as.matrix(Xir)
   cna_states_WGS=as.numeric(cna_states_WGS)
+  
 
   # priors
   if(is.null(U0)){
@@ -261,6 +262,7 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=
 
   rownames(Zall)=paste0("Iter",1:niter)
   colnames(Zall)=rownames(Xir)
+  names(cna_states_WGS)=colnames(Xir)
 
   results=list(Zall=Zall, Uall=Uall, sigma_all=sigma_all, Likelihood=LL)
   priors=list(Z0=Z0, U0=U0, sigmas0=sigmas0, alpha=alpha, beta=beta, cna_states_WGS=cna_states_WGS, L0=L0, wU0=wU0, seed=seed)
