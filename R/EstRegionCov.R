@@ -12,6 +12,7 @@
 #' @param ctrl_region A vector indicating the chromosomes used to compute normalizing factors. The format should be c("chr1", "chr3", ...)
 #' @param seg_table_filtered A segmentation table from the "Segmentation_bulk" function.
 #' @param size A matrix with two columns: col1: different chromosome; col2: for the size (bp) of different chromosomes.
+#' @param est_mode Character. Either "all" or "cna_only". 'all': clustering on all regions; 'cna_only': clustering only on regions with CNA (known from matched WGS).
 #' @param plot_path A path for plotting histograms.
 #' @param breaks A parameter used in the "hist" function.
 #'
@@ -58,9 +59,10 @@ EstRegionCov=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltype
 
   est_name=paste0('pt', var_pt, "_",include,"_alpha",alpha_source)#'deltas_rnavar_alphaall_cov_'
 
+
   if(is.null(seg_table_filtered)){
     message("Estimation for each chromosome")
-    seg_table_filtered0=data.frame("chr"=gsub("chr","",size[1:22,1]), 'start'=0, 'end'=as.numeric(size[1:22,2]),
+    seg_table_filtered=data.frame("chr"=gsub("chr","",size[1:22,1]), 'start'=0, 'end'=as.numeric(size[1:22,2]),
                                    'states'=0, 'length'=as.numeric(size[1:22,2]),'mean'=0, 'var'=0, 'Var1'=1:22,'Freq'=50000,'chrr'=size[1:22,1], stringsAsFactors = F)
   }
 

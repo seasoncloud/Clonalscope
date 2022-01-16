@@ -1,13 +1,22 @@
 RunCovCluster=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltype0=NULL, var_pt=0.99, var_pt_ctrl=0.99, include='tumor',
-                       alpha_source='all', ctrl_region=NULL, seg_table_filtered=NULL,size=NULL, dir_path=NULL, breaks=50,
-                       ngene_filter=150, prep_mode='intersect', est_cap=3, alpha=2, beta=2, niter=200,
-                       sigmas0=NULL, U0=NULL, Z0=NULL, seed=200, clustering0=NULL,result0=NULL,
-                       threshold_2nd=-0.3, burnin=NULL, thinning=1 ,mincell = NULL, cutoff = 0.5,
-                       Est_read1=FALSE,Est_read2=FALSE, Clust_read1=FALSE, Clust_read2=FALSE){
+                       alpha_source='all', ctrl_region=NULL, seg_table_filtered=NULL,size=NULL, dir_path=NULL,
+                       ngene_filter=150, breaks=50,
+                       prep_mode='intersect', est_cap=3, alpha=2, beta=2, niter=200,
+                       sigmas0=NULL, U0=NULL, Z0=NULL,clust_mode='all', seed=200, clustering0=NULL,result0=NULL,
+                       threshold_2nd=-0.3, burnin=NULL, thinning=1 ,mincell = NULL, cutoff = 0.4,
+                       re_est=NULL, Est_read1=FALSE,Est_read2=FALSE, Clust_read1=FALSE, Clust_read2=FALSE){
 
   plot_path=paste0(dir_path,"/cov_hist.pdf")
   plot_path2=paste0(dir_path,"/cov_hist_updated.pdf")
   result_all=list()
+
+  if(is.null(re_est)){
+    if(is.null(celltype0)){
+      re_est=TRUE
+    }else if(!is.null(celltype0)){
+      re_est=FALSE
+    }
+  }
 
   if(is.null(celltype0)){
     celltype0=cbind(barcodes[,1], rep("normal", nrow(barcodes)))
@@ -72,7 +81,15 @@ RunCovCluster=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltyp
 
   }else{
 
-    clustering=BayesNonparCluster(Xir=df2, cna_states_WGS =cna_states_WGS , alpha=alpha, beta=beta, niter = niter , sigmas0 =  sigmas0, U0 = U0 , Z0 = Z0 , seed = seed)
+    if(clust_mode=='all'){
+      clustering=BayesNonparCluster(Xir=df2, cna_states_WGS =cna_states_WGS , alpha=alpha, beta=beta, niter = niter , sigmas0 =  sigmas0, U0 = U0 , Z0 = Z0 , seed = seed)
+    }else if(clust_mode=='cna_only'){
+      selr=which(as.character(cna_states_WGS)!='1')
+      clustering=BayesNonparCluster(Xir=df2[,selr], cna_states_WGS =cna_states_WGS[selr] , alpha=alpha, beta=beta, niter = niter , sigmas0 =  sigmas0, U0 = U0 , Z0 = Z0 , seed = seed)
+    }else{
+      stop("Please specify a valid clust_mode.")
+    }
+
     saveRDS(clustering,paste0(dir_path, "/nonpara_clustering.rds"))
   }
   clustering2=MCMCtrim(clustering, burnin = burnin, thinning = thinning)
@@ -88,7 +105,7 @@ RunCovCluster=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltyp
   # update coverage estimation if needed
   result2=NULL
   tmp=1
-  while(any(result$corrs< threshold_2nd) & tmp<10){
+  while((any(result$corrs< threshold_2nd) & tmp<10) & re_est==TRUE){
     tmp=tmp+1
     message("Estimated clusters with negative correlation to the WGS data.")
     message(paste0("Start estimation ",tmp))
@@ -137,9 +154,15 @@ RunCovCluster=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltyp
       clustering=readRDS(paste0(dir_path, "/nonpara_clustering_updated",tmp,".rds"))
 
     }else{
+      if(clust_mode=='all'){
+        clustering=BayesNonparCluster(Xir=df2, cna_states_WGS =cna_states_WGS , alpha=alpha, beta=beta, niter = niter , sigmas0 =  sigmas0, U0 = U0 , Z0 = Z0 , seed = seed)
+      }else if(clust_mode=='cna_only'){
+        selr=which(as.character(cna_states_WGS)!='1')
+        clustering=BayesNonparCluster(Xir=df2[,selr], cna_states_WGS =cna_states_WGS[selr] , alpha=alpha, beta=beta, niter = niter , sigmas0 =  sigmas0, U0 = U0 , Z0 = Z0 , seed = seed)
+      }else{
+        stop("Please specify a valid clust_mode.")
+      }
 
-
-      clustering=BayesNonparCluster(Xir=df2, cna_states_WGS =cna_states_WGS , alpha=alpha, beta=beta, niter = niter , sigmas0 =  sigmas0, U0 = U0 , Z0 = Z0 , seed = seed)
       saveRDS(clustering,paste0(dir_path, "/nonpara_clustering_updated",tmp,".rds"))
     }
     clustering2=MCMCtrim(clustering, burnin = burnin, thinning = thinning)

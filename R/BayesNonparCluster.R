@@ -17,7 +17,7 @@
 #'
 #' @import amap
 #' @export
-BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=200, sigmas0=NULL, U0=NULL, Z0=NULL, seed=200){
+BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=200, sigmas0=NULL, U0=NULL, Z0=NULL, clust_mode='all', seed=200){
   #library(amap)
   #cna_states_WGS=U[2,]
   # set values
@@ -25,7 +25,7 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=
   R=ncol(Xir)
   Xir=as.matrix(Xir)
   cna_states_WGS=as.numeric(cna_states_WGS)
-  
+
 
   # priors
   if(is.null(U0)){
@@ -93,7 +93,7 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=
       pp=apply(Xir,1, function(x) sum(dnorm(x, U0[ii,],sigmas0, log = T), na.rm = T))
       PP[,ii]=pp
     }
-    
+
     Z0=apply(PP, 1, function(x) which.max(x))
   }else if(length(Z0)!=N){
     stop("Please specify a vector with length the same as the number of cells!")
@@ -221,7 +221,7 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=
     }
     #sigmas=sqrt(1/(N)*colSums((Xir-Ut[Zt,])^2, na.rm = T))
     sigmas=sqrt((1/colSums(!is.na(Xir)))*colSums((Xir-Ut[Zt,])^2, na.rm = T))
-    
+
     #sigmas=rep(0.3, length(sigmas))
     #sigmas=pmax(sigmas, 0.2)
     colnames(Ut)= names(sigmas)=paste0("R", 1:R)
@@ -246,7 +246,7 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=
     meanX[is.na(meanX)]=0
     Ut[kk,]=meanX
   }
-  
+
   #sigmas=sqrt(1/(N)*colSums((Xir-Ut[Zt,])^2, na.rm = T))
   sigmas=sqrt((1/colSums(!is.na(Xir)))*colSums((Xir-Ut[Zt,])^2, na.rm = T))
   colnames(Ut)= names(sigmas)=paste0("R", 1:R)

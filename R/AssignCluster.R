@@ -1,4 +1,4 @@
-AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.3, allele=FALSE, cna_states_WGS=NULL, rm_extreme=F, cap_corr=1.5){
+AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.4, allele=FALSE, cna_states_WGS=NULL, rm_extreme=F, cap_corr=1.5){
 
   if(allele==FALSE){
     ## set values
