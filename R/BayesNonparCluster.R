@@ -136,7 +136,7 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=
   Ut=U0
 
   #npoints_percluster=as.numeric(table(Zt))
-  npoints_percluster=table(Zt)[as.character(1:max(Zt))]
+  npoints_percluster=table(Zt)[as.character(1:nrow(U0))]####
   npoints_percluster[is.na(npoints_percluster)]=0
 
   #names(npoints_percluster)=paste0("c",1:2)

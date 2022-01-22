@@ -3,7 +3,7 @@ RunCovCluster=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltyp
                        ngene_filter=150, breaks=50,
                        prep_mode='intersect', est_cap=3, alpha=2, beta=2, niter=200,
                        sigmas0=NULL, U0=NULL, Z0=NULL,clust_mode='all', seed=200, clustering0=NULL,result0=NULL,
-                       threshold_2nd=-0.3, burnin=NULL, thinning=1 ,mincell = NULL, cutoff = 0.4,
+                       threshold_2nd=-0.2, burnin=NULL, thinning=1 ,mincell = NULL, cutoff = 0.2,
                        re_est=NULL, Est_read1=FALSE,Est_read2=FALSE, Clust_read1=FALSE, Clust_read2=FALSE){
 
   plot_path=paste0(dir_path,"/cov_hist.pdf")

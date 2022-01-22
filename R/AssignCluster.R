@@ -1,4 +1,4 @@
-AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.4, allele=FALSE, cna_states_WGS=NULL, rm_extreme=F, cap_corr=1.5){
+AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.2, allele=FALSE, cna_states_WGS=NULL, rm_extreme=F, cap_corr=1.5){
 
   if(allele==FALSE){
     ## set values
@@ -98,7 +98,8 @@ AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.4, allele=FALSE, c
     # })
     #Usub2=apply(Usub,2, function(x) pmax(x,0.5))
     corrs=apply(Usub2[,corr_region_ind,drop=F], 1, function(x){
-      tmp=sort((as.numeric(x)-1)*(as.numeric(priors[corr_region_ind])-1))
+      ###tmp=sort((as.numeric(x)-1)*(as.numeric(priors[corr_region_ind])-1))
+      tmp=sort((as.numeric(x)-1)*(as.numeric(priors[corr_region_ind])-1))/(sqrt(sum((as.numeric(x)-1)^2))*sqrt(sum((as.numeric(priors[corr_region_ind])-1)^2)))
       if(length(tmp)==0){
         return(NA)
       }else{
@@ -117,10 +118,12 @@ AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.4, allele=FALSE, c
     #cor(as.numeric(priors),x)) ###c
 
     corrs[is.na(corrs)]=0
-    if(max(corrs, na.rm = T)/(length(which(as.numeric(priors[corr_region_ind])!=1)))<0.1){
+    ### if(max(corrs, na.rm = T)/(length(which(as.numeric(priors[corr_region_ind])!=1)))<0.1){
+    if(max(corrs, na.rm = T)<0.5){
       warning("WGS and scRNA do not match well. annot might not be accurate!")
     }
-    corrs=corrs/max(corrs)
+
+    ##### corrs=corrs/max(corrs)
 
     #if(dist=='correlation'){
     # if(sd(priors)==0){
