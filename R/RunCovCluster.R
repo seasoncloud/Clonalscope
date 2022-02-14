@@ -122,7 +122,7 @@ RunCovCluster=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltyp
       deltas_all=readRDS(paste0(dir_path, "/deltas_allseg_updated",tmp,".rds"))
     }else{
       deltas_all=EstRegionCov(mtx=mtx, barcodes=barcodes, features=features, bed=bed, celltype0=celltype0, var_pt=var_pt, var_pt_ctrl=var_pt_ctrl, include=include,
-                              alpha_source=alpha_source, ctrl_region=ctrl_region, seg_table_filtered=Obj_filtered$seg_table_filtered, size=size,
+                              alpha_source=alpha_source, ctrl_region=ctrl_region, seg_table_filtered=seg_table_filtered, size=size,
                               plot_path=plot_path2, breaks=breaks)
 
       saveRDS(deltas_all, paste0(dir_path, "/deltas_allseg_updated",tmp,".rds"))
