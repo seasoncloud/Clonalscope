@@ -102,15 +102,15 @@ AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.2, allele=FALSE, c
     #   }
     # })
     #Usub2=apply(Usub,2, function(x) pmax(x,0.5))
-    ss=as.numeric(sapply(strsplit(names(priors),"-"),'[',2))
-    ee=as.numeric(sapply(strsplit(names(priors),"-"),'[',3))
-    weights=ee-ss
+    #ss=as.numeric(sapply(strsplit(names(priors),"-"),'[',2))
+    #ee=as.numeric(sapply(strsplit(names(priors),"-"),'[',3))
+    #weights=ee-ss
     corrs=apply(Usub2[,corr_region_ind,drop=F], 1, function(x){
-      if(use_weight==T){
-        tmp=sort((sqrt(weights)[corr_region_ind]/sum(sqrt(weights)[corr_region_ind]))*((as.numeric(x)-1)*(as.numeric(priors[corr_region_ind])-1))/(sqrt(sum((as.numeric(x)-1)^2))*sqrt(sum((as.numeric(priors[corr_region_ind])-1)^2))))
-    }else{
+    #   if(use_weight==T){
+    #     tmp=sort((sqrt(weights)[corr_region_ind]/sum(sqrt(weights)[corr_region_ind]))*((as.numeric(x)-1)*(as.numeric(priors[corr_region_ind])-1))/(sqrt(sum((as.numeric(x)-1)^2))*sqrt(sum((as.numeric(priors[corr_region_ind])-1)^2))))
+    # }else{
       tmp=sort(((as.numeric(x)-1)*(as.numeric(priors[corr_region_ind])-1))/(sqrt(sum((as.numeric(x)-1)^2))*sqrt(sum((as.numeric(priors[corr_region_ind])-1)^2))))
-  }
+ # }
   ###tmp=sort((as.numeric(x)-1)*(as.numeric(priors[corr_region_ind])-1))
   #(sqrt(weights)[corr_region_ind]/sum(sqrt(weights)[corr_region_ind]))*
   if(length(tmp)==0){
