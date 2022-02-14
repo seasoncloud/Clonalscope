@@ -16,7 +16,6 @@
 #' sigma_all: estimated standard deviation of each region (column) for each iteration (row); Likelihood: total data likelihood for each iteration.
 #' "priors" stores the prior values used in the process.
 #'
-#' @import amap
 #' @export
 BayesNonparAlleleCluster=function(Xir_cov=NULL,Xir_allele=NULL, cna_states_WGS=NULL,alpha=1, beta=1, niter=200, sigmas0_cov=NULL, sigmas0_allele=NULL, U0=NULL, Z0=NULL, maxcp=6,seed=200){
   #library(amap)
@@ -33,6 +32,9 @@ BayesNonparAlleleCluster=function(Xir_cov=NULL,Xir_allele=NULL, cna_states_WGS=N
   N=nrow(Xir_cov)
   R=ncol(Xir_cov)
   Xir_cov=as.matrix(Xir_cov)
+  Xir_cov0=Xir_cov
+
+  Xir_cov=apply(Xir_cov, 2, function(x) pmin(x, 3))
   Xir_allele=as.matrix(Xir_allele)
   cna_states_WGS=as.numeric(cna_states_WGS)
 
@@ -292,14 +294,14 @@ BayesNonparAlleleCluster=function(Xir_cov=NULL,Xir_allele=NULL, cna_states_WGS=N
 
 
   rownames(Zall)=paste0("Iter",1:niter)
-  colnames(Zall)=paste0("Cell", 1:N)
+  colnames(Zall)=rownames(Xir_cov)
 
 
   results=list(Zall=Zall, Uall=Uall,Ucov=Ucov,Uallele=Uallele,
                sigma_cov_all=sigma_cov_all,sigma_allele_all=sigma_allele_all,
                Likelihood=LL)
   priors=list(Z0=Z0, U0=U0, sigmas0_cov=sigmas0_cov, sigmas0_allele=sigmas0_allele, alpha=alpha, beta=beta, cna_states_WGS=cna_states_WGS, L0=L0, wU0=wU0)
-  data=list(Xir_cov=Xir_cov, Xir_allele=Xir_allele)
+  data=list(Xir_cov=Xir_cov0, Xir_allele=Xir_allele)
   return(list(results=results, priors=priors, data=data))
 
 }

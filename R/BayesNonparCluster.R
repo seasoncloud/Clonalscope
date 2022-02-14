@@ -17,7 +17,7 @@
 #'
 #' @import amap
 #' @export
-BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=1, beta=1, niter=200, sigmas0=NULL, U0=NULL, Z0=NULL, clust_mode='all', seed=200){
+BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=2, beta=2, niter=200, sigmas0=NULL, U0=NULL, Z0=NULL, clust_mode='all', seed=200){
   #library(amap)
   #cna_states_WGS=U[2,]
   # set values

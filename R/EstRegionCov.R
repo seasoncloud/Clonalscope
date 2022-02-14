@@ -3,7 +3,7 @@
 #' @param mtx A (sparse) matrix with each row being a feature and each column being a cell barcode. (Output from cellranger)
 #' @param barcodes A matrix/ data.frame with barcodes for each cell in the first column.
 #' @param features A matrix/ data.frame with the columns- 1st: gendID; 2nd: gene name. Each row is a feature whose order should correspond to the rows of "mtx".
-#' @param bed A matrix with the bed file format. COL1- chromosome; COL2- start coordinate; COL3- end coordinate; COL4- the gene ID matches the one in "features".
+#' @param bed A matrix with the bed file format. COL1- chromosome; COL2- start coordinate; COL3- end coordinate; COL4- the gene ID matches the one in "features" (COL1).
 #' @param celltype0 A matrix with two columns: COL1- cell barcodes; COL2- cell types (Tumor cells should be labeled as "tumor" and the set of cells used as control should be labeled as "normal").
 #' @param var_pt A decimal between [0,1]. Exclude the extremely variable genes with variance > the var_pt percentile for the tested cells.
 #' @param var_pt_ctrl A decimal between [0,1]. Exclude the extremely variable genes with variance > the var_pt percentile for the control cells.
