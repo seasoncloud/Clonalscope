@@ -1,4 +1,4 @@
-Package: scRNACNV
+Package: Clonalscope
 Type: Package
 Title: Copy number calling for scRNA-seq data paired with WGS/WES
 Version: 1.0.0

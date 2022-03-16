@@ -1,1 +1,1 @@
-# scRNACNV
+# Clonalscope
