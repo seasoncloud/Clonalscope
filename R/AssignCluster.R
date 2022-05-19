@@ -191,7 +191,7 @@ annot[annot!="T"]=paste0("N")
 
 message("Succeed!")
 
-return(list(Zest=Zest, corrs=corrs[Zest], annot=annot[Zest],Uest=Usub, sigmas_est=sigmas, Zmaj= maj_vote, cutoff=cutoff, U0=cluster_obj$priors$U0,  wU0=cluster_obj$priors$wU0))
+return(list(Zest=Zest, corrs=corrs[Zest], annot=annot[Zest],Uest=Usub, sigmas_est=sigmas, Zmaj= maj_vote, cutoff=cutoff, U0=cluster_obj$priors$U0, mincell=mincell, wU0=cluster_obj$priors$wU0))
 
 
 }else{  ### allele

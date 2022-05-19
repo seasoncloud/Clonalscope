@@ -11,31 +11,32 @@ For more information about the method, please check out the [github](https://git
 ## Prepare input files
 The following are the input files for different steps.
 
-1. A feature-barcode (sparse) UMI matrix. [EXAMPLE](https://github.com/seasoncloud/Alleloscope/blob/main/data-raw/SNU601/scDNA/alt_all_sub.mtx) 
+1. A feature-barcode (sparse) UMI matrix. [EXAMPLE](https://github.com/seasoncloud/Clonalscope/blob/main/data-raw/P5931/scRNA/filtered_feature_bc_matrix/matrix.mtx.gz) 
 * The matrix is the standard output of the Cell Ranger software.
 * Each element is the number of UMIs associated with a feature (row) and a barcode (column).
 <br/>
  
-2. A tsv file for all cell barcodes. [EXAMPLE](https://github.com/seasoncloud/Alleloscope/blob/main/data-raw/SNU601/scDNA/barcodes_sub.tsv)
+2. A tsv file for all cell barcodes. [EXAMPLE](https://github.com/seasoncloud/Clonalscope/blob/main/data-raw/P5931/scRNA/filtered_feature_bc_matrix/barcodes.tsv.gz)
 * The "barcodes.tsv" file is the standard output of the Cell Ranger software.
 * Each row is a barcode indicating cell identity.
 <br/>
  
 3. A tsv file for feature information. 
-[EXAMPLE](https://github.com/seasoncloud/Alleloscope/blob/main/data-raw/SNU601/scDNA/barcodes_sub.tsv)
+[EXAMPLE](https://github.com/seasoncloud/Clonalscope/blob/main/data-raw/P5931/scRNA/filtered_feature_bc_matrix/features.tsv.gz)
 * The "features.tsv" file is the standard output of the Cell Ranger software.
 * Each row is a gene.The first two columns need to be gene ID and gene name.
 <br/>
 
 4. A matrix for cell type annotation. 
-[EXAMPLE](https://github.com/seasoncloud/Alleloscope/blob/main/data-raw/SNU601/scDNA/barcodes_sub.tsv)
+[EXAMPLE](https://github.com/seasoncloud/Clonalscope/blob/main/data-raw/P5931/scRNA/celltype_all.rds)
 * Each row is a cell. The first and second columns are "cell barcodes" and "annotated cell types". 
 * This matrix is used to specify the cells to use as the baseline for coverage normalization. Please specify the set of cells to be used as the baseline as "normal". 
 <br/>
 
-5. Read count matrices from matched tumor and normal WGS/WES data. (Optional) [EXAMPLE](https://github.com/seasoncloud/Alleloscope/blob/main/data-raw/SNU601/scDNA/tumor_sub.txt) 
+5. Read count matrices from matched tumor and normal WGS/WES data. (Optional) [EXAMPLE](https://github.com/seasoncloud/Clonalscope/tree/main/data-raw/P5931/WGS) 
 * Each row is a bin. The values in the matrices represent total read counts for each bin.
-* The matrix has four columns: col1: chr1 to 22; col2: start position; col3: end position; col4 summed read counts in the bins
+* The matrix has one column showing the summed read counts for each bin.
+* The row names should be ordered and in the format of "chr-start-end" such as chr1-1-20000.
 * Without paired normal sample, other normal samples aligned to the same reference genome (eg. GRCh38) also work if with matched bins.
 * Without matched tumor and normal WGS/WES data, chromosome arms can be used as the segments.
 <br/>

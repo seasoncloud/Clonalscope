@@ -37,7 +37,9 @@ git clone https://github.com/seasoncloud/Clonalscope.git
 
 * Click the links below to read detailed tutorials for different data types.
 
-1. [scRNA-seq](https://github.com/seasoncloud/Clonalscope/tree/main/samples/P5931/scRNA)
+1. [scRNA-seq subclone detection and malignant cell labeling](https://github.com/seasoncloud/Clonalscope/tree/main/samples/P5931/scRNA)
+2. [Spatial Transcriptomic subclone detection](https://github.com/seasoncloud/Clonalscope/tree/main/samples/BC_ductal2/ST)
+3. [Spatial Transcriptomic subclone tracing](https://github.com/seasoncloud/Clonalscope/tree/main/samples/BC_ductal1/ST)
 <br/>
 
 ## Citation
