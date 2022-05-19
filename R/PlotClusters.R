@@ -12,7 +12,7 @@
 #' @import pheatmap
 #' @import RColorBrewer
 #' @export
-PlotClusters=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="segment", consensus=F, maxv=2, fontsize=10,  fontsize_row = 10 , fontsize_col = 10, allele=F, lab_mode="annot", od_mode=2 , annotation_colors = NA){
+PlotClusters=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="segment", consensus=F, maxv=2, fontsize=10,  fontsize_row = 10 , fontsize_col = 10, allele=F, lab_mode="annot", od_mode=1 , annotation_colors = NA){
   maxv=pmax(maxv,2)
   if(allele==F){
     library(pheatmap)

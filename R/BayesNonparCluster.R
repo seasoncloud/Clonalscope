@@ -93,6 +93,16 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=2, beta=2, niter=
       pp=apply(Xir,1, function(x) sum(dnorm(x, U0[ii,],sigmas0, log = T), na.rm = T))
       PP[,ii]=pp
     }
+#
+#     for(ii in  which(!is.na(U0[,1]))){ ###
+#       pp=apply(Xir,1, function(x) sum(((as.numeric(x)-1)*(as.numeric(U0[ii,])-1))/(sqrt(sum((as.numeric(x)-1)^2))*sqrt(sum((as.numeric(U0[ii,])-1)^2)))))
+#       PP[,ii]=pp
+#     }
+
+    # for(ii in  which(!is.na(U0[,1]))){ ###
+    #   pp=apply(Xir,1, function(x) cor(as.numeric(x), as.numeric(U0[ii,])))
+    #   PP[,ii]=pp
+    # }
 
     Z0=apply(PP, 1, function(x) which.max(x))
   }else if(length(Z0)!=N){

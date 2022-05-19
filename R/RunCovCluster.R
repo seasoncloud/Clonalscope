@@ -2,7 +2,7 @@ RunCovCluster=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltyp
                        alpha_source='all', ctrl_region=NULL, seg_table_filtered=NULL,size=NULL, dir_path=NULL,
                        ngene_filter=150, breaks=50,
                        prep_mode='intersect', est_cap=3, alpha=2, beta=2, niter=200,
-                       sigmas0=NULL, U0=NULL, Z0=NULL,clust_mode='all', seed=200, clustering0=NULL,result0=NULL,
+                       sigmas0=NULL, U0=NULL, Z0=NULL,clust_mode='all',clustering_barcodes=NULL, seed=200, clustering0=NULL,result0=NULL,
                        threshold_2nd=-0.2, burnin=NULL, thinning=1 ,mincell = NULL, cutoff = 0.2,
                        re_est=NULL, Est_read1=FALSE,Est_read2=FALSE, Clust_read1=FALSE, Clust_read2=FALSE){
 
@@ -18,6 +18,10 @@ RunCovCluster=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltyp
     }
   }
 
+  if(is.null(clustering_barcodes)){
+    clustering_barcodes=barcodes[,1]
+  }
+
   if(is.null(celltype0)){
     celltype0=cbind(barcodes[,1], rep("normal", nrow(barcodes)))
   }
@@ -26,7 +30,7 @@ RunCovCluster=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltyp
     deltas_all=readRDS(paste0(dir_path, "/deltas_allseg.rds"))
   }else{
     deltas_all=EstRegionCov(mtx=mtx, barcodes=barcodes, features=features, bed=bed, celltype0=celltype0, var_pt=var_pt, var_pt_ctrl=var_pt_ctrl, include=include,
-                            alpha_source=alpha_source, ctrl_region=ctrl_region, seg_table_filtered=Obj_filtered$seg_table_filtered, size=size,
+                            alpha_source=alpha_source, ctrl_region=ctrl_region, seg_table_filtered=seg_table_filtered, size=size,
                             plot_path=plot_path, breaks=breaks)
 
     saveRDS(deltas_all, paste0(dir_path, "/deltas_allseg.rds"))
@@ -39,15 +43,15 @@ RunCovCluster=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltyp
   print(paste0("Dimension after filtering:",dim(df)))
 
 
-  if(is.null(mincell)){
-    if(nrow(df)<500){
-      mincell=5
-    }else if(nrow(df)<1500){
-      mincell=10
-    }else{
-      mincell=20
-    }
-  }
+  # if(is.null(mincell)){
+  #   if(nrow(df)<500){
+  #     mincell=5
+  #   }else if(nrow(df)<1500){
+  #     mincell=10
+  #   }else{
+  #     mincell=20
+  #   }
+  # }
 
   seg_table_filtered=df_obj$seg_table_filtered
 
@@ -80,24 +84,30 @@ RunCovCluster=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltyp
     clustering=readRDS(paste0(dir_path, "/nonpara_clustering.rds"))
 
   }else{
-
     if(clust_mode=='all'){
-      clustering=BayesNonparCluster(Xir=df2, cna_states_WGS =cna_states_WGS , alpha=alpha, beta=beta, niter = niter , sigmas0 =  sigmas0, U0 = U0 , Z0 = Z0 , seed = seed)
+      selr=1:length(cna_states_WGS)
+     # clustering=BayesNonparCluster(Xir=df2[which(rownames(df2) %in% clustering_barcodes), , drop=F], cna_states_WGS =cna_states_WGS , alpha=alpha, beta=beta, niter = niter , sigmas0 =  sigmas0, U0 = U0 , Z0 = Z0[which(rownames(df2) %in% clustering_barcodes)] , seed = seed)
     }else if(clust_mode=='cna_only'){
       selr=which(as.character(cna_states_WGS)!='1')
-      clustering=BayesNonparCluster(Xir=df2[,selr], cna_states_WGS =cna_states_WGS[selr] , alpha=alpha, beta=beta, niter = niter , sigmas0 =  sigmas0, U0 = U0 , Z0 = Z0 , seed = seed)
     }else{
       stop("Please specify a valid clust_mode.")
     }
+    clustering=BayesNonparCluster(Xir=df2[which(rownames(df2) %in% clustering_barcodes),selr], cna_states_WGS =cna_states_WGS[selr] , alpha=alpha, beta=beta, niter = niter , sigmas0 =  sigmas0, U0 = U0 , Z0 = Z0[which(rownames(df2) %in% clustering_barcodes)] , seed = seed)
 
     saveRDS(clustering,paste0(dir_path, "/nonpara_clustering.rds"))
   }
   clustering2=MCMCtrim(clustering, burnin = burnin, thinning = thinning)
 
+  ## sel mincelll
+  if(is.null(mincell)){
+   mincell=round(length(clustering_barcodes)*0.01)
+  }
+
   result=AssignCluster(clustering2, mincell = mincell, cutoff = cutoff)
   Zest=result$Zest
   print(paste0("Zest: ",table(Zest)))
 
+  df_obj$df=df_obj$df[which(rownames(df_obj$df) %in% clustering_barcodes),, drop=F]
 
   result1=list( deltas_all= deltas_all, cna_states_WGS=cna_states_WGS, df_obj=df_obj, clustering=clustering, clustering2=clustering2, result=result)
   result_all[['result1']]=result1
@@ -155,13 +165,14 @@ RunCovCluster=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltyp
 
     }else{
       if(clust_mode=='all'){
-        clustering=BayesNonparCluster(Xir=df2, cna_states_WGS =cna_states_WGS , alpha=alpha, beta=beta, niter = niter , sigmas0 =  sigmas0, U0 = U0 , Z0 = Z0 , seed = seed)
+        selr=1:length(cna_states_WGS)
+        #clustering=BayesNonparCluster(Xir=df2, cna_states_WGS =cna_states_WGS , alpha=alpha, beta=beta, niter = niter , sigmas0 =  sigmas0, U0 = U0 , Z0 = Z0 , seed = seed)
       }else if(clust_mode=='cna_only'){
         selr=which(as.character(cna_states_WGS)!='1')
-        clustering=BayesNonparCluster(Xir=df2[,selr], cna_states_WGS =cna_states_WGS[selr] , alpha=alpha, beta=beta, niter = niter , sigmas0 =  sigmas0, U0 = U0 , Z0 = Z0 , seed = seed)
       }else{
         stop("Please specify a valid clust_mode.")
       }
+      clustering=BayesNonparCluster(Xir=df2[which(rownames(df2) %in% clustering_barcodes),selr], cna_states_WGS =cna_states_WGS[selr] , alpha=alpha, beta=beta, niter = niter , sigmas0 =  sigmas0, U0 = U0 , Z0 = Z0[which(rownames(df2) %in% clustering_barcodes)] , seed = seed)
 
       saveRDS(clustering,paste0(dir_path, "/nonpara_clustering_updated",tmp,".rds"))
     }
@@ -172,6 +183,8 @@ RunCovCluster=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltyp
     Zest=result$Zest
 
     print(paste0("Zest: ",table(Zest)))
+
+    df_obj$df=df_obj$df[which(rownames(df_obj$df) %in% clustering_barcodes),, drop=F]
 
     result2=list( deltas_all= deltas_all, cna_states_WGS=cna_states_WGS, df_obj=df_obj, clustering=clustering, clustering2=clustering2, result=result, new_normal=new_normal)
     result_all[[paste0('result',tmp)]]=result2

@@ -20,19 +20,11 @@
 #' @import caTools
 #' @import HiddenMarkov
 #' @export
-Segmentation_bulk=function(Obj_filtered=NULL, raw_counts=NULL, ref_counts=NULL,hmm_states=c(0.5, 1.5, 1.8), hmm_sd=0.2, hmm_p=0.000001,nmean=100, plot_seg=TRUE,rds_path=NULL, adj=0, max_qt=0.99){
+Segmentation_bulk=function(Obj_filtered=NULL, hmm_states=c(0.5, 1.5, 1.8), hmm_sd=0.2, hmm_p=0.000001,nmean=100, plot_seg=TRUE,rds_path=NULL, adj=0, max_qt=0.99){
 
   # check parameters
   if(is.null(Obj_filtered)){
     stop("Please provide a valid Alleloscope object for Obj_filtered.")
-  }else if(length(unlist(strsplit(rownames(raw_counts)[2],'-')))!=3){
-    stop("The rownames for the raw_counts matrix should be formatted as: chr1-1-20000.")
-  }else if(length(unlist(strsplit(rownames(ref_counts)[2],'-')))!=3){
-    stop("The rownames for the ref_counts matrix should be formatted as: chr1-1-20000.")
-  }else if(!(nrow(raw_counts)>0 & ncol(raw_counts)>0)){
-    stop("raw_counts matrix is not valid.")
-  }else if(!(nrow(ref_counts)>0 & ncol(ref_counts)>0)){
-    stop("ref_counts matrix is not valid.")
   }else if(length(hmm_states)!=3){
     stop("hmm_states should be an ordered vector for the three HMM numeric states.")
   }else if(!is.numeric(hmm_sd)){
@@ -47,6 +39,8 @@ Segmentation_bulk=function(Obj_filtered=NULL, raw_counts=NULL, ref_counts=NULL,h
   dir_path=Obj_filtered$dir_path
   samplename=Obj_filtered$samplename
   genome_assembly=Obj_filtered$genome_assembly
+  raw_counts=Obj_filtered$raw_counts
+  ref_counts=Obj_filtered$ref_counts
 
   size_all=Obj_filtered$size
   size_all=size_all[order(as.numeric(as.character(names(size_all))))]
