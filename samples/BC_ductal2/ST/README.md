@@ -51,7 +51,7 @@ The following are the input files for different steps.
 library(Clonalscope) # load the library
 setwd("~/Clonalscope/") # set path to the github folder
 
-dir_path <- "./samples/BC_ductal/ST/output/"; dir.create(dir_path) # set up output directory
+dir_path <- "./samples/BC_ductal2/ST/output/"; dir.create(dir_path) # set up output directory
 
 # Size of each chromosome (hg19 and GRCh38 are provided.)
 size=read.table("data-raw/sizes.cellranger-GRCh38-1.0.0.txt", stringsAsFactors = F)
@@ -67,10 +67,10 @@ bed=read.table("data-raw/hg38.genes.bed", sep='\t', header = T)
 * Read example files
 ```
 # files for scRNA-seq data
-mtx=readMM("data-raw/BC_ductal/ST/filtered_feature_bc_matrix/matrix.mtx.gz")
-barcodes=read.table("data-raw/BC_ductal/ST/filtered_feature_bc_matrix/barcodes.tsv.gz", stringsAsFactors = F, sep='\t', header=F)
-features=read.table("data-raw/BC_ductal/ST/filtered_feature_bc_matrix/features.tsv.gz", stringsAsFactors = F, sep='\t', header=F)
-celltype0=readRDS("data-raw/BC_ductal/ST/celltype_all.rds")
+mtx=readMM("data-raw/BC_ductal2/ST/filtered_feature_bc_matrix/matrix.mtx.gz")
+barcodes=read.table("data-raw/BC_ductal2/ST/filtered_feature_bc_matrix/barcodes.tsv.gz", stringsAsFactors = F, sep='\t', header=F)
+features=read.table("data-raw/BC_ductal2/ST/filtered_feature_bc_matrix/features.tsv.gz", stringsAsFactors = F, sep='\t', header=F)
+celltype0=readRDS("data-raw/BC_ductal2/ST/celltype_all.rds")
 ```
 <br/>
 
@@ -158,7 +158,7 @@ emb=PlotUMAP(df = clustering$data, celltype = celltype0, Assign_obj =result, mod
 * The h5 file for the human breast tumor dataset can be found [here](https://cf.10xgenomics.com/samples/spatial-exp/1.1.0/V1_Breast_Cancer_Block_A_Section_2/V1_Breast_Cancer_Block_A_Section_2_filtered_feature_bc_matrix.h5)
 ```
 library(Seurat)
-vs <- Load10X_Spatial("data-raw/BC_ductal/ST/", 
+vs <- Load10X_Spatial("data-raw/BC_ductal2/ST/", 
 filename = "V1_Breast_Cancer_Block_A_Section_2_filtered_feature_bc_matrix.h5")
 ```
 
