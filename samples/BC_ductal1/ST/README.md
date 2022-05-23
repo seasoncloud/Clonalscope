@@ -122,7 +122,7 @@ Cov_obj=RunCovCluster(mtx=Input_filtered$mtx, barcodes=Input_filtered$barcodes,
                       alpha_source='all', ctrl_region=NULL, 
                       seg_table_filtered=seg_table_filtered, size=size,
                       dir_path=dir_path, breaks=50, prep_mode = 'intersect', 
-                      clustering0=clustering0, result0=result0, seed=5000) 
+                      clustering0=clustering0, result0=result0, seed=200) 
 # save the object
 saveRDS(Cov_obj,paste0(dir_path,"/Cov_obj.rds"))
 ```

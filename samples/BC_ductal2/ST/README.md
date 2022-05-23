@@ -111,7 +111,7 @@ Cov_obj=RunCovCluster(mtx=Input_filtered$mtx, barcodes=Input_filtered$barcodes,
                       celltype0=celltype0, var_pt=0.99, var_pt_ctrl=0.99, include='all',
                       alpha_source='all', ctrl_region=NULL, 
                       seg_table_filtered=seg_table_filtered, size=size,
-                      dir_path=dir_path, breaks=50, prep_mode = 'intersect', seed=5000) 
+                      dir_path=dir_path, breaks=50, prep_mode = 'intersect', seed=200) 
 # save the object
 saveRDS(Cov_obj,paste0(dir_path,"/Cov_obj.rds"))
 ```
@@ -130,9 +130,9 @@ table(result$Zest)
 
 * If you want to adjust the resolution (ie. minimum number of cells/spots in each cluster), the following command can be re-run.
 ```
-result=AssignCluster(clustering2, mincell = 100)
-Zest=result$Zest
-table(result$Zest)
+#result=AssignCluster(clustering2, mincell = 100)
+#Zest=result$Zest
+#table(result$Zest)
 ```
 
 * Visualize the subclones/clusters in the heatmap.
