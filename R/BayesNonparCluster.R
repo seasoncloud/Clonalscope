@@ -9,6 +9,7 @@
 #' @param U0 A matrix/data.frame with each row being a cluster and each column being a region (ncol(U0) should be the same as ncol(Xir)). The values represent prior mean of relatvie coverage for each cluster.
 #' @param Z0 A numeric vector indicating the cluster identity for each cell. The order show be the same as that of Xir's row. The values should represent the order of the cluster the same as that of U0's row.
 #' @param seed Integer. Set the seed for the stochastic process.
+#' @param verbose Logical. Whether or not to print out the results for each iteration.
 #'
 #' @return A list with "results" and "priors"/
 #' "results" contains Zall: estimated subclone identity of each cell (column) for each iteration (row); Uall: estimated mean values for each subclone and each iteration;
@@ -17,7 +18,7 @@
 #'
 #' @import amap
 #' @export
-BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=2, beta=2, niter=200, sigmas0=NULL, U0=NULL, Z0=NULL, clust_mode='all', seed=200){
+BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=2, beta=2, niter=200, sigmas0=NULL, U0=NULL, Z0=NULL, clust_mode='all', seed=200, verbose=FALSE){
   #library(amap)
   #cna_states_WGS=U[2,]
   # set values
@@ -242,10 +243,17 @@ BayesNonparCluster=function(Xir=NULL,cna_states_WGS=NULL,alpha=2, beta=2, niter=
 
 
     LL[tt]=sum(sapply(1:N, function(x) sum(weights*dnorm(as.numeric(Xir[x,]), Ut[Zt, , drop=F][x,],sd=sigmas, log = T), na.rm = T)))
+
+    if(verbose==TRUE){
     print(paste0("Iteration:", tt))
     print(paste0("nclusters=",nrow(Ut)))
     print(table(Zt))
     #print(Ut[which(!is.na(Ut[,1])),c(7,8,19), drop=F])
+    }else{
+      if(tt%%20==0){
+      print(paste0("Iteration:", tt))
+      }
+    }
 
   }
 

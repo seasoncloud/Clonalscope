@@ -2,7 +2,7 @@ RunCovCluster=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltyp
                        alpha_source='all', ctrl_region=NULL, seg_table_filtered=NULL,size=NULL, dir_path=NULL,
                        ngene_filter=150, breaks=50,
                        prep_mode='intersect', est_cap=3, alpha=2, beta=2, niter=200,
-                       sigmas0=NULL, U0=NULL, Z0=NULL,clust_mode='all',clustering_barcodes=NULL, seed=200, clustering0=NULL,result0=NULL,
+                       sigmas0=NULL, U0=NULL, Z0=NULL,clust_mode='all',clustering_barcodes=NULL, seed=200, clustering0=NULL,result0=NULL,verbose=FALSE,
                        threshold_2nd=-0.2, burnin=NULL, thinning=1 ,mincell = NULL, cutoff = 0.2,
                        re_est=NULL, Est_read1=FALSE,Est_read2=FALSE, Clust_read1=FALSE, Clust_read2=FALSE){
 
@@ -92,7 +92,7 @@ RunCovCluster=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltyp
     }else{
       stop("Please specify a valid clust_mode.")
     }
-    clustering=BayesNonparCluster(Xir=df2[which(rownames(df2) %in% clustering_barcodes),selr], cna_states_WGS =cna_states_WGS[selr] , alpha=alpha, beta=beta, niter = niter , sigmas0 =  sigmas0, U0 = U0 , Z0 = Z0[which(rownames(df2) %in% clustering_barcodes)] , seed = seed)
+    clustering=BayesNonparCluster(Xir=df2[which(rownames(df2) %in% clustering_barcodes),selr], cna_states_WGS =cna_states_WGS[selr] , alpha=alpha, beta=beta, niter = niter , sigmas0 =  sigmas0, U0 = U0 , Z0 = Z0[which(rownames(df2) %in% clustering_barcodes)] , seed = seed, verbose=verbose)
 
     saveRDS(clustering,paste0(dir_path, "/nonpara_clustering.rds"))
   }
@@ -172,7 +172,7 @@ RunCovCluster=function(mtx=NULL, barcodes=NULL, features=NULL, bed=NULL, celltyp
       }else{
         stop("Please specify a valid clust_mode.")
       }
-      clustering=BayesNonparCluster(Xir=df2[which(rownames(df2) %in% clustering_barcodes),selr], cna_states_WGS =cna_states_WGS[selr] , alpha=alpha, beta=beta, niter = niter , sigmas0 =  sigmas0, U0 = U0 , Z0 = Z0[which(rownames(df2) %in% clustering_barcodes)] , seed = seed)
+      clustering=BayesNonparCluster(Xir=df2[which(rownames(df2) %in% clustering_barcodes),selr], cna_states_WGS =cna_states_WGS[selr] , alpha=alpha, beta=beta, niter = niter , sigmas0 =  sigmas0, U0 = U0 , Z0 = Z0[which(rownames(df2) %in% clustering_barcodes)] , seed = seed, verbose=verbose)
 
       saveRDS(clustering,paste0(dir_path, "/nonpara_clustering_updated",tmp,".rds"))
     }

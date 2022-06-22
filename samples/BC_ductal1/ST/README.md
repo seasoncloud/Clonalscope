@@ -130,7 +130,7 @@ saveRDS(Cov_obj,paste0(dir_path,"/Cov_obj.rds"))
 
 #### Step3. Visualization
 
-* Extract values from the object.
+* Extract clustering results from the object.
 ```
 clustering= Cov_obj$result_final$clustering
 clustering2= Cov_obj$result_final$clustering2

@@ -76,6 +76,8 @@ celltype0=readRDS("data-raw/BC_ductal2/ST/celltype_all.rds")
 
 #### Step1. Segment the genome using matched WGS/WES data (Optional)
 
+* In this step, prior segments and CNA states are retrieved from matched WGS/WES data for the downstream analysis. 
+
 * Chromosome arms are used as the segments here without mathced WGS/WES data.
 ```
 # Generate segmentation table for each chromosome arm.
@@ -94,6 +96,8 @@ seg_table_filtered=data.frame("chr"=bin_bed[,1], 'start'=as.numeric(bin_bed[,2])
 <br/><br/>
 
 #### Step2. Subclone detection in spatial transcriptomic data
+
+* In Step2, copy number states of each region are estimated for each spot in the spatial transcriptomic dataset with the prior information from bulk WGS/WES data. Then subclones based on copy number configurations are detected by a nested Chinese Restaurant Process.
 
 * Filter input files
 ```
@@ -119,7 +123,7 @@ saveRDS(Cov_obj,paste0(dir_path,"/Cov_obj.rds"))
 
 #### Step3. Visualization
 
-* Extract values from the object.
+* Extract clustering results from the object.
 ```
 clustering= Cov_obj$result_final$clustering
 clustering2= Cov_obj$result_final$clustering2
@@ -128,7 +132,7 @@ Zest=result$Zest
 table(result$Zest)
 ```
 
-* If you want to adjust the resolution (ie. minimum number of cells/spots in each cluster), the following command can be re-run.
+* If you want to adjust the resolution (ie. minimum number of cells/spots in each cluster), the following command can be re-run with different "mincell" values. Larger values will result in less clusters.
 ```
 #result=AssignCluster(clustering2, mincell = 100)
 #Zest=result$Zest
@@ -144,7 +148,7 @@ PlotClusters(df = clustering$data, celltype = celltype0, Assign_obj =result, mod
 
 * Visuzlize the subclones/clusters in the UMAP.
 ```
-* Plot the UMAP and save the coordinates
+# Plot the UMAP and save the coordinates
 set.seed(2022)
 emb=PlotUMAP(df = clustering$data, celltype = celltype0, Assign_obj =result, mode = "Zest")
 ```

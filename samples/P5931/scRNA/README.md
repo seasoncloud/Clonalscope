@@ -55,37 +55,39 @@ setwd("~/Clonalscope/") # set path to the github folder
 dir_path <- "./samples/P5931/scRNA/output/"; dir.create(dir_path) # set up output directory
 
 # Size of each chromosome (hg19 and GRCh38 are provided.)
-size=read.table("data-raw/sizes.cellranger-GRCh38-1.0.0.txt", stringsAsFactors = F)
+size <- read.table("data-raw/sizes.cellranger-GRCh38-1.0.0.txt", stringsAsFactors = F)
 
 # List of cyclegenes retrieved from the "CopyKAT"package (https://github.com/navinlabcode/copykat)
-cyclegenes=readRDS("data-raw/cyclegenes.rds")
+cyclegenes <- readRDS("data-raw/cyclegenes.rds")
 
 # bed file indicating gene positions (hg19 and GRCh38 are provided.)
-bed=read.table("data-raw/hg38.genes.bed", sep='\t', header = T)
+bed <- read.table("data-raw/hg38.genes.bed", sep='\t', header = T)
 
 ```
 
 * Read example files
 ```
 # files for scRNA-seq data
-mtx=readMM("data-raw/P5931/scRNA/filtered_feature_bc_matrix/matrix.mtx.gz")
-barcodes=read.table("data-raw/P5931/scRNA/filtered_feature_bc_matrix/barcodes.tsv.gz", stringsAsFactors = F, sep='\t', header=F)
-features=read.table("data-raw/P5931/scRNA/filtered_feature_bc_matrix/features.tsv.gz", stringsAsFactors = F, sep='\t', header=F)
-celltype0=readRDS("data-raw/P5931/scRNA/celltype_all.rds")
+mtx <- readMM("data-raw/P5931/scRNA/filtered_feature_bc_matrix/matrix.mtx.gz")
+barcodes <- read.table("data-raw/P5931/scRNA/filtered_feature_bc_matrix/barcodes.tsv.gz", stringsAsFactors = F, sep='\t', header=F)
+features <- read.table("data-raw/P5931/scRNA/filtered_feature_bc_matrix/features.tsv.gz", stringsAsFactors = F, sep='\t', header=F)
+celltype0 <- readRDS("data-raw/P5931/scRNA/celltype_all.rds")
 
 # files for matched WGS/WES data
-WGSt=readRDS(paste0("data-raw/P5931/WGS/raw_counts.rds"))
-WGSn=readRDS(paste0("data-raw/P5931/WGS/ref_counts.rds"))
+WGSt <- readRDS(paste0("data-raw/P5931/WGS/raw_counts.rds"))
+WGSn <- readRDS(paste0("data-raw/P5931/WGS/ref_counts.rds"))
 ```
 <br/>
 
-#### Step1. Segment the genome using matched WGS/WES data (Optional)
+#### Step1. Segment the genome using matched WGS/WES data. (Optional)
 
-* Chromosome arms can be used as the segments without mathced WGS/WES data. 
+* In this step, prior segments and CNA states are retrieved from matched WGS/WES data for the downstream analysis of the single-cell sequencing data. 
+
+* Chromosome arms can be used as the segments without matched WGS/WES data. Please check this [tutorial](https://github.com/seasoncloud/Clonalscope/tree/main/samples/BC_ductal2/ST) for the case without matching WGS data.
 
 * First, create an object for segmentation.
 ```
-Obj_filtered=Createobj_bulk(raw_counts=WGSt, # from matched DNA sequencing (bulk/single)
+Obj_filtered <- Createobj_bulk(raw_counts=WGSt, # from matched DNA sequencing (bulk/single)
                             ref_counts=WGSn, # from matched DNA sequencing (bulk/single)
                             samplename= "P5931",
                             genome_assembly="GRCh38", dir_path=dir_path, size=size, assay='WGS')
@@ -93,36 +95,38 @@ Obj_filtered=Createobj_bulk(raw_counts=WGSt, # from matched DNA sequencing (bulk
 
 * Segment the genome on matched WGS data.
 ```
-Obj_filtered=Segmentation_bulk(Obj_filtered=Obj_filtered,
+Obj_filtered <- Segmentation_bulk(Obj_filtered=Obj_filtered,
                                plot_seg = TRUE, hmm_states = c(0.8, 1.1, 1.2))
 ```
 <br/><br/>
 
 #### Step2. Subclone detection in scRNA-seq data
 
+* In Step2, copy number states of each region are estimated for each cell in the scRNA-seq dataset with the prior information from bulk WGS/WES data. Then subclones based on single-cell copy number configurations are detected by a nested Chinese Restaurant Process.
+
 * Assign cells to be used as baseline for coverage normalization as "normal"
 ```
-celltype=celltype0
-celltype[which(!grepl('Epithelial', celltype[,2])),2]='normal'
+celltype <- celltype0
+celltype[which(!grepl('Epithelial', celltype[,2])),2] <- 'normal'
 ```
 
 * Select barcodes for clustering only on epithelial cells
 ```
-clustering_barcodes=celltype[which(grepl("Epithelial",celltype[,2])),1]
+clustering_barcodes <- celltype[which(grepl("Epithelial",celltype[,2])),1]
 ```
 
 * Filter input files
 ```
-Input_filtered=FilterFeatures(mtx=mtx, barcodes=barcodes, features=features, cyclegenes=cyclegenes)
+Input_filtered <- FilterFeatures(mtx=mtx, barcodes=barcodes, features=features, cyclegenes=cyclegenes)
 
 # Remove raw inputs
 rm(mtx); rm(barcodes); rm(features)
 ```
 
-* Subclone detection in scRNA-seq data
+* Subclone detection in scRNA-seq data.
 ```
 set.seed(2022)
-Cov_obj=RunCovCluster(mtx=Input_filtered$mtx, barcodes=Input_filtered$barcodes, 
+Cov_obj <- RunCovCluster(mtx=Input_filtered$mtx, barcodes=Input_filtered$barcodes, 
                       features=Input_filtered$features, bed=bed, 
                       celltype0=celltype, var_pt=0.99, var_pt_ctrl=0.99, include='all',
                       alpha_source='all', ctrl_region=NULL, 
@@ -134,11 +138,11 @@ Cov_obj=RunCovCluster(mtx=Input_filtered$mtx, barcodes=Input_filtered$barcodes,
 
 #### Step3. Visualization
 
-* Extract values from the object.
+* Extract clustering results from the object.
 ```
-clustering= Cov_obj$result_final$clustering
-clustering2= Cov_obj$result_final$clustering2
-result=Cov_obj$result_final$result
+clustering <- Cov_obj$result_final$clustering
+clustering2 <- Cov_obj$result_final$clustering2
+result <- Cov_obj$result_final$result
 table(result$Zest)
 ```
 
@@ -151,9 +155,9 @@ PlotClusters(df = Cov_obj$result_final$df_obj$df, celltype = celltype0, Assign_o
 
 * Visuzlize the subclones/clusters in the UMAP.
 ```
-* Plot the UMAP and save the coordinates
+# Plot the UMAP and save the coordinates
 set.seed(2022)
-emb=PlotUMAP(df = Cov_obj$result_final$df_obj$df, celltype = celltype0, Assign_obj =result, mode = "Zest")
+emb <- PlotUMAP(df = Cov_obj$result_final$df_obj$df, celltype = celltype0, Assign_obj =result, mode = "Zest")
 ```
 
 ![](../../../inst/plots/P5931_UMAP.png?raw=true "P5931 UMAP")

@@ -133,7 +133,7 @@ Cov_obj=RunCovCluster(mtx=Input_filtered$mtx, barcodes=Input_filtered$barcodes,
 
 #### Step3. Visualization
 
-* Extract values from the object.
+* Extract clustering results from the object.
 ```
 clustering= Cov_obj$result_final$clustering
 clustering2= Cov_obj$result_final$clustering2
