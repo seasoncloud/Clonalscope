@@ -1,3 +1,13 @@
+#' Filter the output from EstRegionCov and prepare the input matrix for BayesNonparCluster.
+#'
+#' @param deltas_all A list object. Output of the "EstRegionCov" function storeing values of estimated coverage change for each cell and each region
+#' @param ngene_filter Integer. Include only the segments/regions covering at lest ngene_filter genes.
+#' @param ncell_filter Integer. Include only the segments/regions with at least ncell_filter cells carrying non-zero read counts.
+#' @param prep_mode Character. Please specify either "intersect" or "union". "Intersect" selects cells with non-zero read counts for all the selected regions. "Union" includes all cells in the datasets.
+#'
+#' @return A list with the filtered data frame (df), the segments used (seg_table_filtered), and the arguments used.
+#'
+#' @export
 PrepCovMatrix=function(deltas_all=NULL, ngene_filter=200, ncell_filter=NULL, prep_mode='intersect'){
   ## library required
   library(Matrix)

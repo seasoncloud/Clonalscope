@@ -1,4 +1,26 @@
-AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.2, allele=FALSE, cna_states_WGS=NULL, rm_extreme=F, cap_corr=1.5, use_weight=F){
+return(list(Zest=Zest, corrs=corrs[Zest], annot=annot[Zest],Uest=Usub, sigmas_est=sigmas, Zmaj= maj_vote, cutoff=cutoff, U0=cluster_obj$priors$U0, mincell=mincell, wU0=cluster_obj$priors$wU0))
+
+
+#' Assign subclonal identity to each cell
+#'
+#' @param cluster_obj A list object after trimming. Output from the MCMCtrim function.
+#' @param mincell Integer. A cluster will be considered if it contains at least mincell cells. Otherwise, cells in the invalid clusters will be re-assigned to the existing clusters.
+#' @param cutoff Integer. Set the threshold for classify clusters as malignant or not by comparing to the WGS copy number profiles. This threshould may depend on the datasets, but the relative values of the malignancy index are still informative.
+#' @param allele Logical(TRUE/FALSE). Whether the data is allele-specific or not.
+#' @param cna_states_WGS A vector indicating the copy number states for each region (ordered). If not specified, the prior cna_states_WGS in the cluster_obj will be used.
+#' @param rm_extreme Logical. Whether or not to remove the two extreme regions in estimating the malignancy index.
+#' @param cap_corr. Numeric. Set the maximum values of the average fold change across all regions for each identified clusters for estimating the malignancy index.
+#'
+#' @return A list with the results of subclonal identity assignment for each cell and the arguments used.
+#' "Zest": cells' cluster identity
+#' "corr": cells' malignancy index based on their cluster identity
+#' "annot": malignant cell labeling based on their cluster identity. T: malignant cells and N: non-malingnat cells.
+#' "Uest": Average fold changes of all regions for each identify subclone/cluster
+#' "sigmas_est" standard deviation of eac region across all clusters
+#' "Zmaj": cells' cluster identity (prelimary assignment without constraining the minimum number of cells per clsuter)
+#'
+#' @export
+AssignCluster=function(cluster_obj=NULL, mincell=20, cutoff=0.2, allele=FALSE, cna_states_WGS=NULL, rm_extreme=F, cap_corr=1.5){
 
   if(allele==FALSE){
     ## set values

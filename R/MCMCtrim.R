@@ -7,7 +7,7 @@
 #'
 #' @return A list with trimmed "results" and "priors"/
 #' "results" contains Zall: estimated subclone identity of each cell (column) for each iteration (row); Uall: estimated mean values for each subclone and each iteration;
-#' sigma_all: estimated standard deviation of each region (column) for each iteration (row); Likelihood: total data likelihood for each iteration.
+#' "sigma_all": estimated standard deviation of each region (column) for each iteration (row); Likelihood: total data likelihood for each iteration.
 #' "priors" stores the prior values used in the process.
 #'
 #' @export
