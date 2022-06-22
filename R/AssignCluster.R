@@ -1,6 +1,3 @@
-return(list(Zest=Zest, corrs=corrs[Zest], annot=annot[Zest],Uest=Usub, sigmas_est=sigmas, Zmaj= maj_vote, cutoff=cutoff, U0=cluster_obj$priors$U0, mincell=mincell, wU0=cluster_obj$priors$wU0))
-
-
 #' Assign subclonal identity to each cell
 #'
 #' @param cluster_obj A list object after trimming. Output from the MCMCtrim function.
