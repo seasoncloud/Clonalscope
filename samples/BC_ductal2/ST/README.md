@@ -1,9 +1,9 @@
-Clonalscope (Spatial Transcriptomic)
+Clonalscope (Spatial Transcriptomic subclone detection)
 ================
 Chi-Yun Wu, Zhang Lab, University of Pennsylvania
 
 ## Description
-Clonalscope enables subclone detection, malignant spot labeling (with matched WGS/WES data), and lineage tracing in spatial transcriptomic data.
+Clonalscope enables subclone detection, malignant spot labeling (with matched WGS/WES data), and subclone tracing in spatial transcriptomic data. Here we demonstrated Clonalscope's ability in subclone detection on a spatial transcriptomic dataset.
 
 For more information about the method, please check out the [github](https://github.com/seasoncloud/Clonalscope) and the [manuscript]().
 <br/>

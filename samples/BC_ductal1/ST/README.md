@@ -1,9 +1,9 @@
-Clonalscope (Spatial Transcriptomic)
+Clonalscope (Spatial Transcriptomic subclone detection and tracing)
 ================
 Chi-Yun Wu, Zhang Lab, University of Pennsylvania
 
 ## Description
-Clonalscope enables subclone detection, malignant spot labeling (with matched WGS/WES data), and lineage tracing in spatial transcriptomic data.
+Clonalscope enables subclone detection, malignant spot labeling (with matched WGS/WES data), and subclone tracing in spatial transcriptomic data. Here we demonstrated Clonalscope's ability in tracing subclones between two associated spatial transcriptomic (or scRNA-seq) dataset. The associated datasets can be from the two regions of a sample, from two time points, and etc. 
 
 For more information about the method, please check out the [github](https://github.com/seasoncloud/Clonalscope) and the [manuscript]().
 <br/>
@@ -44,7 +44,8 @@ The following are the input files for different steps.
 
 
 ## Tutorial for subclone tracing in Spatial transcriptomic data
-* Here is an example application of subclone detection and lineage tracing to two datasets from two sections of a human breast tumor (https://www.10xgenomics.com/resources/datasets/human-breast-cancer-block-a-section-1-1-standard-1-1-0).
+* Here is an example application of subclone detection and tracing to two 10X VISIUM datasets from two sections of a human breast tumor.
+* The de novo subclones detected in the first [dataset](https://github.com/seasoncloud/Clonalscope/tree/main/samples/BC_ductal2/ST) can be used as the prior and traced in the second dataset (https://www.10xgenomics.com/resources/datasets/human-breast-cancer-block-a-section-1-1-standard-1-1-0).
 * Subclone tracing in scRNA-seq is similiar but without integrating with spatial information. 
 <br/>
 
@@ -58,23 +59,23 @@ setwd("~/Clonalscope/") # set path to the github folder
 dir_path <- "./samples/BC_ductal1/ST/output/"; dir.create(dir_path) # set up output directory
 
 # Size of each chromosome (hg19 and GRCh38 are provided.)
-size=read.table("data-raw/sizes.cellranger-GRCh38-1.0.0.txt", stringsAsFactors = F)
+size <- read.table("data-raw/sizes.cellranger-GRCh38-1.0.0.txt", stringsAsFactors = F)
 
 # List of cyclegenes retrieved from the "CopyKAT"package (https://github.com/navinlabcode/copykat)
-cyclegenes=readRDS("data-raw/cyclegenes.rds")
+cyclegenes <- readRDS("data-raw/cyclegenes.rds")
 
 # bed file indicating gene positions (hg19 and GRCh38 are provided.)
-bed=read.table("data-raw/hg38.genes.bed", sep='\t', header = T)
+bed <- read.table("data-raw/hg38.genes.bed", sep='\t', header = T)
 
 ```
 
 * Read example files
 ```
 # files for scRNA-seq data
-mtx=readMM("data-raw/BC_ductal1/ST/filtered_feature_bc_matrix/matrix.mtx.gz")
-barcodes=read.table("data-raw/BC_ductal1/ST/filtered_feature_bc_matrix/barcodes.tsv.gz", stringsAsFactors = F, sep='\t', header=F)
-features=read.table("data-raw/BC_ductal1/ST/filtered_feature_bc_matrix/features.tsv.gz", stringsAsFactors = F, sep='\t', header=F)
-celltype0=readRDS("data-raw/BC_ductal1/ST/celltype_all_c3.rds")
+mtx <- readMM("data-raw/BC_ductal1/ST/filtered_feature_bc_matrix/matrix.mtx.gz")
+barcodes <- read.table("data-raw/BC_ductal1/ST/filtered_feature_bc_matrix/barcodes.tsv.gz", stringsAsFactors = F, sep='\t', header=F)
+features <- read.table("data-raw/BC_ductal1/ST/filtered_feature_bc_matrix/features.tsv.gz", stringsAsFactors = F, sep='\t', header=F)
+celltype0 <- readRDS("data-raw/BC_ductal1/ST/celltype_all_c3.rds")
 ```
 <br/>
 
@@ -83,11 +84,11 @@ celltype0=readRDS("data-raw/BC_ductal1/ST/celltype_all_c3.rds")
 * Chromosome arms are used as the segments here without mathced WGS/WES data.
 ```
 # Generate segmentation table for each chromosome arm.
-chrarm=read.table("data-raw/cytoarm_table_hg38.txt", stringsAsFactors = F, sep='\t', header=T)
-chrarm=chrarm[order(as.numeric(chrarm[,1]),as.numeric(chrarm[,3])),]
-bin_bed=chrarm[,-2]
+chrarm <- read.table("data-raw/cytoarm_table_hg38.txt", stringsAsFactors = F, sep='\t', header=T)
+chrarm <- chrarm[order(as.numeric(chrarm[,1]),as.numeric(chrarm[,3])),]
+bin_bed <- chrarm[,-2]
 
-seg_table_filtered=data.frame("chr"=bin_bed[,1], 'start'=as.numeric(bin_bed[,2]),
+seg_table_filtered <- data.frame("chr"=bin_bed[,1], 'start'=as.numeric(bin_bed[,2]),
 'end'=as.numeric(bin_bed[,3]), 'states'=1, 'length'=as.numeric(bin_bed[,3])-as.numeric(bin_bed[,2]),
 'mean'=0, 'var'=0, 'Var1'=1:nrow(bin_bed),'Freq'=50000,
 'chrr'=paste0(bin_bed[,1],":", bin_bed[,2]), stringsAsFactors = F)
@@ -97,11 +98,13 @@ seg_table_filtered=data.frame("chr"=bin_bed[,1], 'start'=as.numeric(bin_bed[,2])
 
 <br/><br/>
 
-#### Step2. Subclone detection in spatial transcriptomic data
+#### Step2. Subclone tracing and novel subclone detection in spatial transcriptomic data
+
+* In Step2, copy number states of each region are estimated for each spot in the spatial transcriptomic dataset with the prior information from bulk WGS/WES data. Then subclones based on copy number configurations are detected by a nested Chinese Restaurant Process with prior subclones from another associated dataset.  
 
 * Filter input files
 ```
-Input_filtered=FilterFeatures(mtx=mtx, barcodes=barcodes, features=features, cyclegenes=cyclegenes)
+Input_filtered <- FilterFeatures(mtx=mtx, barcodes=barcodes, features=features, cyclegenes=cyclegenes)
 
 # Remove raw inputs
 rm(mtx); rm(barcodes); rm(features)
@@ -110,13 +113,13 @@ rm(mtx); rm(barcodes); rm(features)
 * Subclone tracing in ST data
 ```
 # Read in prior object from another associated dataset
-Cov_obj0=readRDS("samples/BC_ductal2/ST/output/Cov_obj.rds")
-clustering0=Cov_obj0$result_final$clustering
-result0=Cov_obj0$result_final$result
+Cov_obj0 <- readRDS("samples/BC_ductal2/ST/output/Cov_obj.rds")
+clustering0 <- Cov_obj0$result_final$clustering
+result0 <- Cov_obj0$result_final$result
 
 # Trace subclone in the new dataset
 set.seed(2022)
-Cov_obj=RunCovCluster(mtx=Input_filtered$mtx, barcodes=Input_filtered$barcodes, 
+Cov_obj <- RunCovCluster(mtx=Input_filtered$mtx, barcodes=Input_filtered$barcodes, 
                       features=Input_filtered$features, bed=bed, 
                       celltype0=celltype0, var_pt=0.99, var_pt_ctrl=0.99, include='all',
                       alpha_source='all', ctrl_region=NULL, 
@@ -132,17 +135,17 @@ saveRDS(Cov_obj,paste0(dir_path,"/Cov_obj.rds"))
 
 * Extract clustering results from the object.
 ```
-clustering= Cov_obj$result_final$clustering
-clustering2= Cov_obj$result_final$clustering2
-result=Cov_obj$result_final$result
-Zest=result$Zest
+clustering <- Cov_obj$result_final$clustering
+clustering2 <- Cov_obj$result_final$clustering2
+result <- Cov_obj$result_final$result
+Zest <- result$Zest
 table(result$Zest)
 ```
 
 * If you want to adjust the resolution (ie. minimum number of cells/spots in each cluster), the following command can be re-run.
 ```
-result=AssignCluster(clustering2, mincell = 100)
-Zest=result$Zest
+result <- AssignCluster(clustering2, mincell = 100)
+Zest <- result$Zest
 table(result$Zest)
 ```
 
@@ -157,7 +160,7 @@ PlotClusters(df = clustering$data, celltype = celltype0, Assign_obj =result, mod
 ```
 * Plot the UMAP and save the coordinates
 set.seed(2022)
-emb=PlotUMAP(df = clustering$data, celltype = celltype0, Assign_obj =result, mode = "Zest")
+emb <- PlotUMAP(df = clustering$data, celltype = celltype0, Assign_obj =result, mode = "Zest")
 ```
 
 ![](../../../inst/plots/BC_ductal1_UMAP.png?raw=true "BC section2 UMAP")
@@ -170,27 +173,30 @@ emb=PlotUMAP(df = clustering$data, celltype = celltype0, Assign_obj =result, mod
 ```
 library(Seurat)
 vs <- Load10X_Spatial("data-raw/BC_ductal1/ST/", 
-filename = "V1_Breast_Cancer_Block_A_Section_1_filtered_feature_bc_matrix.h5")
+filename <- "V1_Breast_Cancer_Block_A_Section_1_filtered_feature_bc_matrix.h5")
 ```
 
 * Set the color the same as those from the prior subclones.
 ```
 library(gplots)
-clusters=Zest[match(names(vs$orig.ident), names(Zest))]; clusters[is.na(clusters)]=0
-cols0=clusters
-U0=result$U0
-new_indc=which(! names(table(cols0)) %in% as.character(1:max(which(!is.na(U0[,1])))))
-col_use=c(colors()[c(1, 609, 536, 62, 652, 611, 463, 498, 71, 258, 84, 56, 26, 154, 59, 134, 78, 116, 85, 20, 259)])[1:(length(new_indc)+length(which(!is.na(U0[,1]))))]
-names(col_use)=sort(as.numeric(c(which(!is.na(U0[,1])), names(table(cols0))[new_indc])))
+clusters <- Zest[match(names(vs$orig.ident), names(Zest))]; clusters[is.na(clusters)]=0
+cols0 <- clusters
+U0 <- result$U0
+new_indc <- which(! names(table(cols0)) %in% as.character(1:max(which(!is.na(U0[,1])))))
+col_use <- c(colors()[c(1, 609, 536, 62, 652, 611, 463, 498, 71, 258, 84, 56, 26, 154, 59, 134, 78, 116, 85, 20, 259)])[1:(length(new_indc)+length(which(!is.na(U0[,1]))))]
+names(col_use) <- sort(as.numeric(c(which(!is.na(U0[,1])), names(table(cols0))[new_indc])))
 ```
 
 * Visualize subclones in the H&E image.
 ```
-Idents(vs)=factor(clusters, levels=sort(as.numeric(unique(clusters))))
+Idents(vs) <- factor(clusters, levels=sort(as.numeric(unique(clusters))))
 SpatialDimPlot(vs, label = F, label.size = 3, stroke = 0, pt.size.factor = 2, cols=col_use)
 ```
 
 ![](../../../inst/plots/BC_ductal1_H&E.png?raw=true "BC section1 H&E")
+<br/>
+
+Comparing the spatial distribution of the subclones in the plot above and that from the [prior dataset](https://github.com/seasoncloud/Clonalscope/tree/main/samples/BC_ductal2/ST), we see that Clonalscope traced the subclones between the two slide sections.
 <br/><br/>
 
 
