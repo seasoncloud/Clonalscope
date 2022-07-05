@@ -4,8 +4,7 @@ Title: Copy number calling for scRNA-seq data paired with WGS/WES
 Version: 1.0.0
 Author: Chi-Yun Wu, Nancy Zhang
 Maintainer: Chi-Yun Wu <chiyunwu@pennmedicine.upenn.edu>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: Clonalscope is a subclone detection method based on copy number alterations (CNAs) for single-cell and ST tumor sequencing data. Clonalscope is able to detect subclones, label malignant cells, and trace subclones for both scRNA-seq and ST data.
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
