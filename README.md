@@ -6,7 +6,7 @@ Chi-Yun Wu, Zhang Lab, University of Pennsylvania
 Clonalscope is a subclone detection method based on copy number alterations (CNAs) for single-cell and ST tumor sequencing data. Clonalscope leverages prior information from matched bulk DNA-seq data, and implements a nested Chinese Restaurant Process to model the evolutionary process in tumors. 
 Clonalscope is able to detect subclones, label malignant cells (with the help of matched WGS/WES data), and trace subclones for both scRNA-seq and ST data.
 
-For more information about the method, please check out the [manuscript]().
+For more information about the method, please check out the [manuscript](https://doi.org/10.1101/2022.07.05.498882).
 <br/>
 
 ## Overview of Clonalscope
@@ -44,7 +44,7 @@ git clone https://github.com/seasoncloud/Clonalscope.git
 <br/>
 
 ## Citation
-Wu, C.-Y. et al. Cancer subclone detection based on DNA copy number in single cell and spatial omic sequencing data. *bioRxiv* (2022): []()
+Wu, C.-Y. et al. Cancer subclone detection based on DNA copy number in single cell and spatial omic sequencing data. *bioRxiv* (2022): [https://doi.org/10.1101/2022.07.05.498882](https://doi.org/10.1101/2022.07.05.498882)
 
 
 

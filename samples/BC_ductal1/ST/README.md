@@ -5,7 +5,7 @@ Chi-Yun Wu, Zhang Lab, University of Pennsylvania
 ## Description
 Clonalscope enables subclone detection, malignant spot labeling (with matched WGS/WES data), and subclone tracing in spatial transcriptomic data. Here we demonstrated Clonalscope's ability in tracing subclones between two associated spatial transcriptomic (or scRNA-seq) dataset. The associated datasets can be from the two regions of a sample, from two time points, and etc. 
 
-For more information about the method, please check out the [github](https://github.com/seasoncloud/Clonalscope) and the [manuscript]().
+For more information about the method, please check out the [github](https://github.com/seasoncloud/Clonalscope) and the [manuscript](https://doi.org/10.1101/2022.07.05.498882).
 <br/>
 
 ## Prepare input files
@@ -201,7 +201,7 @@ Comparing the spatial distribution of the subclones in the plot above and that f
 
 
 ## Citation
-Wu, C.-Y. et al. Cancer subclone detection based on DNA copy number in single cell and spatial omic sequencing data. *bioRxiv* (2022): []()
+Wu, C.-Y. et al. Cancer subclone detection based on DNA copy number in single cell and spatial omic sequencing data. *bioRxiv* (2022): [https://doi.org/10.1101/2022.07.05.498882](https://doi.org/10.1101/2022.07.05.498882)
 
 
 

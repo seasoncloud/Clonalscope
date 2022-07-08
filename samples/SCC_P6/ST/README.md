@@ -5,7 +5,7 @@ Chi-Yun Wu, Zhang Lab, University of Pennsylvania
 ## Description
 Clonalscope enables subclone detection and malignant cell labeling in spatial transcriptomic data.
 
-For more information about the method, please check out the [github](https://github.com/seasoncloud/Clonalscope) and the [manuscript]().
+For more information about the method, please check out the [github](https://github.com/seasoncloud/Clonalscope) and the [manuscript](https://doi.org/10.1101/2022.07.05.498882).
 <br/>
 
 ## Prepare input files
@@ -161,7 +161,7 @@ emb=PlotUMAP(df = Cov_obj$result_final$df_obj$df, celltype = celltype0, Assign_o
 
 
 ## Citation
-Wu, C.-Y. et al. Cancer subclone detection based on DNA copy number in single cell and spatial omic sequencing data. *bioRxiv* (2022): []()
+Wu, C.-Y. et al. Cancer subclone detection based on DNA copy number in single cell and spatial omic sequencing data. *bioRxiv* (2022): [https://doi.org/10.1101/2022.07.05.498882](https://doi.org/10.1101/2022.07.05.498882)
 
 
 
