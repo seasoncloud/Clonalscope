@@ -20,8 +20,11 @@ For more information about the method, please check out the [manuscript](https:/
 ``` R
 Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS="true")
 install.packages("devtools")
+options(timeout=9999999)
 devtools::install_github("seasoncloud/Clonalscope") # install
 library(Clonalscope) # load
+
+# It takes <5 mins for the installation.
 ```
 
 * You can download example datasets for Clonalscope with the following command:
