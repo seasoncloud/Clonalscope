@@ -43,6 +43,7 @@ The following are the input files for different steps.
 
 ## Tutorial for scRNA-seq data
 * Here is an example application to the P5931 scRNA-seq dataset from Sathe et al., 2020.
+* Running time: <5 minutes. 
 <br/>
 
 #### Step0. Load the input files

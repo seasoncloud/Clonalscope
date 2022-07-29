@@ -42,6 +42,7 @@ The following are the input files for different steps.
 
 ## Tutorial for Spatial transcriptomic data
 * Here is an example application of subclone detection and lineage tracing to two datasets from two sections of a human breast tumor (https://www.10xgenomics.com/resources/datasets/human-breast-cancer-block-a-section-2-1-standard-1-1-0).
+* Running time: ~45 mins.
 <br/>
 
 #### Step0. Load the input files

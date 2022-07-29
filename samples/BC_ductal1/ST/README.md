@@ -46,6 +46,7 @@ The following are the input files for different steps.
 ## Tutorial for subclone tracing in Spatial transcriptomic data
 * Here is an example application of subclone detection and tracing to two 10X VISIUM datasets from two sections of a human breast tumor.
 * The de novo subclones detected in the first [dataset](https://github.com/seasoncloud/Clonalscope/tree/main/samples/BC_ductal2/ST) can be used as the prior and traced in the second dataset (https://www.10xgenomics.com/resources/datasets/human-breast-cancer-block-a-section-1-1-standard-1-1-0).
+* Running time: ~1 hour.
 * Subclone tracing in scRNA-seq is similiar but without integrating with spatial information. 
 <br/>
 
