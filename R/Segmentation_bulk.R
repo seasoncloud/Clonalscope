@@ -3,9 +3,6 @@
 #' If there is no paired normal, other normal sample with the same genome coordinate also works.
 #'
 #' @param Obj_filtered An Alleloscope object.
-#' @param raw_counts A binned coverage matrix (m1 bin by n1 cell) with values being read counts in DNA sequencing data for all chromosomal regions of tumor sample. n1 can be 1 for bulk sample.
-#' @param ref_counts A binned coverage matrix (m2 bin by n2 cell) with values being read counts in DNA sequencing data for all chromosomal regions of normal sample. n2 can be 1 for bulk sample.
-#' Numbers of bins (rows) should be the same in the paired chromosomal regions for the paired samples
 #' @param plot_seg Logical (TRUE/ FALSE). Whether or not to plot the segmentation result.
 #' @param hmm_states An ordered vector for the HMM numeric states (deletion, 1-copy gain, 2-copy gains).
 #' @param hmm_sd Numeric. Fixed standard deviation for the HMM states.
