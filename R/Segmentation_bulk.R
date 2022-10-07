@@ -18,7 +18,7 @@
 #' @import HiddenMarkov
 #' @export
 Segmentation_bulk=function(Obj_filtered=NULL, hmm_states=c(0.5, 1.5, 1.8), hmm_sd=0.2, hmm_p=0.000001,nmean=100, plot_seg=TRUE,rds_path=NULL, adj=0, max_qt=0.99){
-  ## test2
+  ## test3
   # check parameters
   if(is.null(Obj_filtered)){
     stop("Please provide a valid Alleloscope object for Obj_filtered.")
