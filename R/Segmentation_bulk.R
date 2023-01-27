@@ -17,7 +17,7 @@
 #' @import caTools
 #' @import HiddenMarkov
 #' @export
-Segmentation_bulk=function(Obj_filtered=NULL, hmm_states=c(0.5, 1.5, 1.8), hmm_sd=0.2, hmm_p=0.000001,nmean=100, plot_seg=TRUE,rds_path=NULL, adj=0, max_qt=0.99){
+Segmentation_bulk=function(Obj_filtered=NULL, hmm_states=c(0.5, 1.5, 1.8), hmm_sd=0.2, hmm_p=0.000001,nmean=100, plot_seg=TRUE,rds_path=NULL, adj=0, max_qt=0.99, rm_extreme=2, assay='scRNA'){
   ## test3
   # check parameters
   if(is.null(Obj_filtered)){
@@ -32,7 +32,7 @@ Segmentation_bulk=function(Obj_filtered=NULL, hmm_states=c(0.5, 1.5, 1.8), hmm_s
 
 
   # set values
-  assay=Obj_filtered$assay
+  #assay=Obj_filtered$assay
   dir_path=Obj_filtered$dir_path
   samplename=Obj_filtered$samplename
   genome_assembly=Obj_filtered$genome_assembly
@@ -60,6 +60,9 @@ Segmentation_bulk=function(Obj_filtered=NULL, hmm_states=c(0.5, 1.5, 1.8), hmm_s
     chr_name=paste0('chr',names(Obj_filtered$size)) # size does not have 'chr'
   }
 
+  if(assay=='scRNA'){
+    adj=-0.5
+  }
 
   ## raw/ref count matrix info
   raw_chr=sapply(strsplit(rownames(raw_counts),'-'),'[',1)
@@ -106,15 +109,22 @@ Segmentation_bulk=function(Obj_filtered=NULL, hmm_states=c(0.5, 1.5, 1.8), hmm_s
 
   cov3=cov2
   cov3=pmin(cov3, quantile(cov3, max_qt))
-  cov3=cov3
   cov4=cov3/median(cov3)
 
   # remove low cov bins
-  sel_bin=which(cov4>0.4)
-  cov4=cov4[sel_bin]
-  cov2=cov2[sel_bin]
-  cov3=cov3[sel_bin]
-  chromnum=chromnum[sel_bin]
+  if(rm_extreme==1){
+    sel_bin=which(cov4>0.4)
+    cov4=cov4[sel_bin]
+    cov2=cov2[sel_bin]
+    cov3=cov3[sel_bin]
+    chromnum=chromnum[sel_bin]
+  }else if(rm_extreme==2){
+    sel_bin=which(cov4>0.4 & cov2!=100)
+    cov4=cov4[sel_bin]
+    cov2=cov2[sel_bin]
+    cov3=cov3[sel_bin]
+    chromnum=chromnum[sel_bin]
+  }
 
 
   raw_chr=raw_chr[sel_bin]
@@ -197,6 +207,17 @@ Segmentation_bulk=function(Obj_filtered=NULL, hmm_states=c(0.5, 1.5, 1.8), hmm_s
 
   colnames(seg_table_all)=c("chr","start", "end", "states","length","mean","var")
 
+  if(assay=='scRNA'){
+    if(median(as.numeric(seg_table_all[,4]))==0.5){
+      adj=0
+      seg_table_all[,4]=as.numeric(seg_table_all[,4])+0.5
+      annot='N'
+    }else{
+      annot='T'
+    }
+  }else{
+    annot=NULL
+  }
 
   ## visualization
   if(plot_seg==TRUE){
@@ -231,6 +252,8 @@ Segmentation_bulk=function(Obj_filtered=NULL, hmm_states=c(0.5, 1.5, 1.8), hmm_s
 
   Obj_filtered[['seg_table']]=seg_table_all
   saveRDS(seg_table_all, paste0(rds_path, "/seg_table_all_",samplename,".rds"))
+
+  Obj_filtered[['annot']]=annot
 
   message("Segmentation done!")
   cat("\"seg_table\" was added to the Obj_filtered object.\n")

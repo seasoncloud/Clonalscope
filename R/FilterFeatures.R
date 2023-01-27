@@ -1,8 +1,8 @@
 #' Filter out cycle genes and HLA genes (Gao et al., 2021)
 #'
-#' @param mtx A list object. Output of the "BayesNonparCluster" function.
-#' @param barcodes Integer. Number of iterations to throw away for the MCMC process.
-#' @param features Integer. Subsampling every integer number of iterations.
+#' @param mtx A (sparse) matrix with each row being a feature and each column being a cell barcode.
+#' @param barcodes A matrix/ data.frame with barcodes for each cell in the first column.
+#' @param features A matrix/ data.frame with the columns- 1st: gendID; 2nd: gene name. Each row is a feature whose order should correspond to the rows of "mtx".
 #' @param rcycle Lpgical. Remove cycle genes or not.
 #' @param rHLA Logical. Remove HLA genes or not.
 #' @param rMT Logical. Remove MT genes.
@@ -36,9 +36,11 @@ FilterFeatures=function(mtx=NULL, barcodes=NULL, features=NULL, rcycle=TRUE, rHL
   }
 
   ind_rm=sort(unique(c(ind_rm1, ind_rm2, ind_rm3)))
+
+  if(length(ind_rm)>0){
   mtx=mtx[-ind_rm,]
   features=features[-ind_rm,]
-
+  }
 
   Obj_filtered=list('mtx'=mtx, 'barcodes'=barcodes, 'features'=features, 'rcycle'=rcycle, 'rHLA'=rHLA, 'rMT'=rMT)
   message("Input files were succefully filtered!")
