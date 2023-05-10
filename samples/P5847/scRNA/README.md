@@ -4,7 +4,7 @@ Chi-Yun Wu, Jiazhen Rong, Zhang Lab, University of Pennsylvania
 
 ## Description
 For scRNA-seq data, Clonalscope enables subclone detection and malignant cell labeling.
-This tutorial is for the case when paried WGS is not avalible.
+This tutorial is for the case **when paried WGS is not avaliable**.
 
 For more information about the method, please check out the [github](https://github.com/seasoncloud/Clonalscope) and the [manuscript](https://doi.org/10.1101/2022.07.05.498882).
 <br/>
@@ -12,24 +12,24 @@ For more information about the method, please check out the [github](https://git
 ## Prepare input files
 The following are the input files for different steps.
 
-1. A feature-barcode (sparse) UMI matrix. [EXAMPLE](https://github.com/seasoncloud/Clonalscope/blob/main/data-raw/P5931/scRNA/filtered_feature_bc_matrix/matrix.mtx.gz) 
+1. A feature-barcode (sparse) UMI matrix. [EXAMPLE](https://github.com/seasoncloud/Clonalscope/blob/main/data-raw/P5847/scRNA/filtered_feature_bc_matrix/matrix.mtx.gz) 
 * The matrix is the standard output of the Cell Ranger software.
 * Each element is the number of UMIs associated with a feature (row) and a barcode (column).
 <br/>
  
-2. A tsv file for all cell barcodes. [EXAMPLE](https://github.com/seasoncloud/Clonalscope/blob/main/data-raw/P5931/scRNA/filtered_feature_bc_matrix/barcodes.tsv.gz)
+2. A tsv file for all cell barcodes. [EXAMPLE](https://github.com/seasoncloud/Clonalscope/blob/main/data-raw/P5847/scRNA/filtered_feature_bc_matrix/barcodes.tsv.gz)
 * The "barcodes.tsv" file is the standard output of the Cell Ranger software.
 * Each row is a barcode indicating cell identity.
 <br/>
  
 3. A tsv file for feature information. 
-[EXAMPLE](https://github.com/seasoncloud/Clonalscope/blob/main/data-raw/P5931/scRNA/filtered_feature_bc_matrix/features.tsv.gz)
+[EXAMPLE](https://github.com/seasoncloud/Clonalscope/blob/main/data-raw/P5847/scRNA/filtered_feature_bc_matrix/features.tsv.gz)
 * The "features.tsv" file is the standard output of the Cell Ranger software.
 * Each row is a gene.The first two columns need to be gene ID and gene name.
 <br/>
 
 4. A matrix for cell type annotation. 
-[EXAMPLE](https://github.com/seasoncloud/Clonalscope/blob/main/data-raw/P5931/scRNA/celltype_all.rds)
+[EXAMPLE](https://github.com/seasoncloud/Clonalscope/blob/main/data-raw/P5847/scRNA/celltype_all.rds)
 * Each row is a cell. The first and second columns are "cell barcodes" and "annotated cell types". 
 * This matrix is used to specify the cells to use as the baseline for coverage normalization. Please specify the set of cells to be used as the baseline as "normal". 
 * This celltype annotation file can be generated from standard scRNA-Seq analysis and cells can be annotated based on their marker genes (or by RCTD for spatial transcriptomics). We recommend choosing known normal celltypesas "normal", such as immune cells.
@@ -43,7 +43,7 @@ In this tutorial, we will show how to generate CNV segments when paired WGS/WES 
 <br/>
 
 ## Tutorial for scRNA-seq data
-* Here is an example application of Clonalscope on no paired WGS data to the P5931 scRNA-seq dataset from Sathe et al., 2020.
+* Here is an example application of Clonalscope on no paired WGS data to the P5847 scRNA-seq dataset from our study.
 * Running time: ~60 minutes. 
 * To speed up the process, users could also load our resulted objects in this tutorial, including **Cov_obj.rds** in Step 1, **bin_mtx.rds** in Step 2 and **seg_filtered_from_cluster.rds** from Step 2.
 <br/>
