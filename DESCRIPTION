@@ -1,9 +1,9 @@
 Package: Clonalscope
 Type: Package
 Title: Copy number calling for scRNA-seq data paired with WGS/WES
-Version: 1.0.0
-Author: Chi-Yun Wu, Nancy Zhang
-Maintainer: Chi-Yun Wu <chiyunwu@pennmedicine.upenn.edu>
+Version: 1.0.1
+Author: Chi-Yun Wu, Jiazhen Rong, Nancy Zhang
+Maintainer: Chi-Yun Wu <chiyunwu@pennmedicine.upenn.edu>, Jiazhen Rong <Jiazhe.Rong@pennmedicine.upenn.edu>
 Description: Clonalscope is a subclone detection method based on copy number alterations (CNAs) for single-cell and ST tumor sequencing data. Clonalscope is able to detect subclones, label malignant cells, and trace subclones for both scRNA-seq and ST data.
 License: GPL-2
 Encoding: UTF-8
@@ -17,11 +17,13 @@ Imports:
     pheatmap,
     cowplot,
     HiddenMarkov,
-    RColorBrewer
+    RColorBrewer,
+    data.table
 Depends: 
     R (>= 3.6.0),
     Matrix,
-    rtracklayer
+    rtracklayer,
+    data.table
 biocViews: Software
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.3

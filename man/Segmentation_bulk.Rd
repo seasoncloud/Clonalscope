@@ -6,8 +6,6 @@
 \usage{
 Segmentation_bulk(
   Obj_filtered = NULL,
-  raw_counts = NULL,
-  ref_counts = NULL,
   hmm_states = c(0.5, 1.5, 1.8),
   hmm_sd = 0.2,
   hmm_p = 1e-06,
@@ -15,16 +13,13 @@ Segmentation_bulk(
   plot_seg = TRUE,
   rds_path = NULL,
   adj = 0,
-  max_qt = 0.99
+  max_qt = 0.99,
+  rm_extreme = 2,
+  assay = "scRNA"
 )
 }
 \arguments{
 \item{Obj_filtered}{An Alleloscope object.}
-
-\item{raw_counts}{A binned coverage matrix (m1 bin by n1 cell) with values being read counts in DNA sequencing data for all chromosomal regions of tumor sample. n1 can be 1 for bulk sample.}
-
-\item{ref_counts}{A binned coverage matrix (m2 bin by n2 cell) with values being read counts in DNA sequencing data for all chromosomal regions of normal sample. n2 can be 1 for bulk sample.
-Numbers of bins (rows) should be the same in the paired chromosomal regions for the paired samples}
 
 \item{hmm_states}{An ordered vector for the HMM numeric states (deletion, 1-copy gain, 2-copy gains).}
 

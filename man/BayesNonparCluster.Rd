@@ -7,13 +7,15 @@
 BayesNonparCluster(
   Xir = NULL,
   cna_states_WGS = NULL,
-  alpha = 1,
-  beta = 1,
+  alpha = 2,
+  beta = 2,
   niter = 200,
   sigmas0 = NULL,
   U0 = NULL,
   Z0 = NULL,
-  seed = 200
+  clust_mode = "all",
+  seed = 200,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -34,6 +36,8 @@ BayesNonparCluster(
 \item{Z0}{A numeric vector indicating the cluster identity for each cell. The order show be the same as that of Xir's row. The values should represent the order of the cluster the same as that of U0's row.}
 
 \item{seed}{Integer. Set the seed for the stochastic process.}
+
+\item{verbose}{Logical. Whether or not to print out the results for each iteration.}
 }
 \value{
 A list with "results" and "priors"/

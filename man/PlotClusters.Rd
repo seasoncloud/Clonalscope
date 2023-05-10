@@ -11,23 +11,37 @@ PlotClusters(
   mode = "segment",
   consensus = F,
   maxv = 2,
+  allele = F,
+  lab_mode = "annot",
+  od_mode = 1,
+  annotation_colors = NA,
   fontsize = 10,
   fontsize_row = 10,
-  fontsize_col = 10,
-  allele = F,
-  show_annot = T
+  fontsize_col = 10
 )
 }
 \arguments{
 \item{df}{A matrix/data.frame with each row being a cell and each column being a segment (from the WES/WGS). The values are the estimated fold change for each cell in each reion (from EstRegionCov).}
 
-\item{celltype}{A matrix with 2+ columns: COL1- cell barcodes; COL2+- cell types and other information for plotting.}
+\item{celltype}{A matrix with 2+ columns: COL1- cell barcodes; COL2 cell types and COL2+ other information for plotting.}
+
+\item{Assign_obj}{An output object from the "AssignCluster" function.}
 
 \item{mode}{Character for the mode of heatmap to plot. The value should be one of \link{"segment","genome"}."segment": plot each segment with equal length; "genome": genome view for each segment.}
 
+\item{consensus}{Logical. Whether or not to show the consensus values for each cluster in the heatmap.}
+
 \item{maxv}{Numeric. Set the ceiling number for plotting.}
 
-\item{Zest}{Estimated cell cluster identity from the BayesNonparCluster estimation.The order should be the same as that of the input matrix.}
+\item{allele}{Logical. Whether or not the results are based on both coverage changes and allelic ratios.}
+
+\item{lab_mode}{Character or logical. If lab_mode is not "FALSE", the argument should be one of \link{"annot","corr"} to show labeling of malignancy or malignancy index respectively.}
+
+\item{od_mode}{Integer. "1" to order cells based on their cluster identity; "2" to order cells based on both cluster identity and cell types.}
+
+\item{annotation_colors}{Parameter used in the function "pheatmap" to assign colors for celltypes.}
+
+\item{fontsize}{Fontsize used inn the function "pheatmap" for plotting.}
 }
 \value{
 A heatmap showing the result from the Bayesian non-parametric clustering. Each row is a cell and each column is a region. The values are the coverage change.
