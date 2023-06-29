@@ -11,13 +11,15 @@
 #' @param adj Numeric. Value for tumor coverage adjustment.
 #' @param rds_path The path for saving the rds files for the estimated results for each region.
 #' @param max_qt Numeric value in [0,1]. Setting the maximum value to the max_qt quantile to avoid extreme values.
+#' @param rm_extreme Integer values in 1,2. Default setting is 1 which filters low coverage bins. Setting to 2 lead to more extreme filtering (of inifinitly large bins).
+#' @param assay String value in "WGS","scRNA".Default setting is "WGS" which does not adjust the mean value of states. Setting to "scRNA" readjust the mean value of segments by -0.5.
 #'
 #' @return A Alleloscope object with "seg_table" added.
 #'
 #' @import caTools
 #' @import HiddenMarkov
 #' @export
-Segmentation_bulk=function(Obj_filtered=NULL, hmm_states=c(0.5, 1.5, 1.8), hmm_sd=0.2, hmm_p=0.000001,nmean=100, plot_seg=TRUE,rds_path=NULL, adj=0, max_qt=0.99, rm_extreme=2, assay='scRNA'){
+Segmentation_bulk=function(Obj_filtered=NULL, hmm_states=c(0.5, 1.5, 1.8), hmm_sd=0.2, hmm_p=0.000001,nmean=100, plot_seg=TRUE,rds_path=NULL, adj=0, max_qt=0.99, rm_extreme=1, assay='WGS'){
   ## test3
   # check parameters
   if(is.null(Obj_filtered)){

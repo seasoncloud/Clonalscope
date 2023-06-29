@@ -11,6 +11,7 @@
 #'
 #' @return A Alleloscope object including the necessary information.
 #'
+#' @import stringr
 #' @export
 Createobj_bulk=function(raw_counts=NULL, ref_counts=NULL,samplename='sample',genome_assembly="GRCh38", dir_path='./', size=NULL, assay='WGS'){
 
@@ -26,7 +27,30 @@ Createobj_bulk=function(raw_counts=NULL, ref_counts=NULL,samplename='sample',gen
   }else if(!(nrow(ref_counts)>0 & ncol(ref_counts)>0)){
     stop("ref_counts matrix is not valid.")
   }
+  # check coverage matrix's order, automatically sorting autosomes
+  wgst_order = sapply(strsplit(unique(sapply(strsplit(rownames(raw_counts),"-"),"[[",1)),"chr"),"[[",2)
+  if(any(wgst_order != wgst_order[order(as.numeric(as.character(wgst_order)))])){
+    message("WGS of tumor sample not ordered, reordering numerically...")
+    chr_names = sapply(strsplit(rownames(raw_counts),"-"),"[[",1)
+    chr_start=sapply(strsplit(rownames(raw_counts),"-"),"[[",2)
+    if(grepl('chr', chr_names[1])){
+      chr_names=sapply(strsplit(chr_names,'hr'),'[',2)##if chr
+    }
+    raw_counts=raw_counts[order(as.numeric(chr_names),as.numeric(chr_start)),,drop=F]
+  }
+  wgsn_order = sapply(strsplit(unique(sapply(strsplit(rownames(ref_counts),"-"),"[[",1)),"chr"),"[[",2)
+  if(any(wgsn_order != wgsn_order[order(as.numeric(as.character(wgsn_order)))])){
+    message("WGS of normal sample not ordered, reordering numerically...")
+    chr_names = sapply(strsplit(rownames(ref_counts),"-"),"[[",1)
+    chr_start=sapply(strsplit(rownames(ref_counts),"-"),"[[",2)
+    if(grepl('chr', chr_names[1])){
+      chr_names=sapply(strsplit(chr_names,'hr'),'[',2)##if chr
+    }
+    ref_counts=ref_counts[order(as.numeric(chr_names),as.numeric(chr_start)),,drop=F]
+  }
 
+  
+  
   dir.create(paste0(dir_path,"/plots"))
 
     chrr=sapply(strsplit(rownames(raw_counts),"-"),'[',1)
