@@ -7,7 +7,7 @@
 #' @param consensus Logical. Whether or not to show the consensus values for each cluster in the heatmap.
 #' @param maxv Numeric. Set the ceiling number for plotting.
 #' @param allele Logical. Whether or not the results are based on both coverage changes and allelic ratios.
-#' @param lab_mode Character or logical. If lab_mode is not "FALSE", the argument should be one of ["annot","corr"] to show labeling of malignancy or malignancy index respectively.
+#' @param lab_mode Character or logical. If lab_mode is not "FALSE", the argument should be one of ["annot","corr","corr_gradient"] to show labeling of malignancy or malignancy index respectively.
 #' @param od_mode Integer. "1" to order cells based on their cluster identity; "2" to order cells based on both cluster identity and cell types.
 #' @param annotation_colors Parameter used in the function "pheatmap" to assign colors for celltypes.
 #' @param fontsize Fontsize used inn the function "pheatmap" for plotting.
@@ -83,6 +83,9 @@ PlotClusters=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="segment", c
       }else if(lab_mode=='corr'){
         celltype0=celltype[,-c(1,(ncol(celltype)-2)), drop=F]
         celltype0=celltype0[,c(1:(ncol(celltype0)-2), ncol(celltype0), (ncol(celltype0)-1)) , drop=F]
+      }else if(lab_mode=='corr_gradient'){
+        celltype0=celltype[,-c(1,(ncol(celltype)-2)), drop=F]
+        celltype0=celltype0[,c(1:(ncol(celltype0)-2), ncol(celltype0), (ncol(celltype0)-1)) , drop=F]
       }else{
         stop("Please specify a valid lab_mode mode!")
       }
@@ -138,7 +141,18 @@ PlotClusters=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="segment", c
       ## names(col_use)=names(table(cols0))
       ann_colors[[colnames(celltype0)[ii]]]=col_use
     }
-
+    # change correlation annotation color to be gradient based 
+    if(lab_mode=='corr_gradient'){
+      break_num=100
+      grad_color=colorRampPalette(c("blue", "white","red"))(break_num)
+      corr_breaks=seq(-1,1,length.out=break_num)
+      names(grad_color) = corr_breaks
+      color_idx=unlist(lapply(as.numeric(names(ann_colors[['corr']])),function(x){which.min(abs(as.numeric(names(grad_color)) - x))}))
+      corr_colors = grad_color[color_idx]
+      names(corr_colors)=names(ann_colors[['corr']])
+      ann_colors[['corr']]=corr_colors
+    }
+    
     if(consensus==T){
       df2_colnamae=colnames(df2)
       df2_rownames=rownames(df2)
@@ -239,6 +253,9 @@ PlotClusters=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="segment", c
       }else if(lab_mode=='corr'){
         celltype0=celltype[,-c(1,(ncol(celltype)-2)), drop=F]
         celltype0=celltype0[,c(1:(ncol(celltype0)-2), ncol(celltype0), (ncol(celltype0)-1)) , drop=F]
+      }else if(lab_mode=='corr_gradient'){
+        celltype0=celltype[,-c(1,(ncol(celltype)-2)), drop=F]
+        celltype0=celltype0[,c(1:(ncol(celltype0)-2), ncol(celltype0), (ncol(celltype0)-1)) , drop=F]
       }else{
         stop("Please specify a valid lab_mode mode!")
       }
@@ -297,7 +314,18 @@ PlotClusters=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="segment", c
       ## names(col_use)=names(table(cols0))
       ann_colors[[colnames(celltype0)[ii]]]=col_use
     }
-
+    # change correlation color to gradient color
+    if(lab_mode=='corr_gradient'){
+      break_num=100
+      grad_color=colorRampPalette(c("blue", "white","red"))(break_num)
+      corr_breaks=seq(-1,1,length.out=break_num)
+      names(grad_color) = corr_breaks
+      color_idx=unlist(lapply(as.numeric(names(ann_colors[['corr']])),function(x){which.min(abs(as.numeric(names(grad_color)) - x))}))
+      corr_colors = grad_color[color_idx]
+      names(corr_colors)=names(ann_colors[['corr']])
+      ann_colors[['corr']]=corr_colors
+    }
+    
     if(consensus==T){
       df2_colnames=colnames(df2_cov)
       df2_rownames=rownames(df2_cov)
