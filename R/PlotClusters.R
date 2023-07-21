@@ -11,13 +11,14 @@
 #' @param od_mode Integer. "1" to order cells based on their cluster identity; "2" to order cells based on both cluster identity and cell types.
 #' @param annotation_colors Parameter used in the function "pheatmap" to assign colors for celltypes.
 #' @param fontsize Fontsize used inn the function "pheatmap" for plotting.
+#' @param custom_colnames String Vector. Change the legend titles of the heatmap.
 #'
 #' @return A heatmap showing the result from the Bayesian non-parametric clustering. Each row is a cell and each column is a region. The values are the coverage change.
 #'
 #' @import pheatmap
 #' @import RColorBrewer
 #' @export
-PlotClusters=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="segment", consensus=F, maxv=2, allele=F, lab_mode="annot", od_mode=1 , annotation_colors = NA, fontsize=10,  fontsize_row = 10 , fontsize_col = 10){
+PlotClusters=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="segment", consensus=F, maxv=2, allele=F, lab_mode="annot", od_mode=1 , annotation_colors = NA, fontsize=10,  fontsize_row = 10 , fontsize_col = 10,custom_colnames=NULL){
   maxv=pmax(maxv,2)
   if(allele==F){
     library(pheatmap)
@@ -41,8 +42,12 @@ PlotClusters=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="segment", c
     if(is.null(colnames(celltype))){
       colnames(celltype)=paste0('COL', 1:ncol(celltype))
     }
-
-    colnames(celltype)=c(colnames(celltype)[1:(ncol(celltype)-3)],"annot", "Zest","corr")
+    if(is.null(custom_colnames)){ # customize heatmap legend
+      colnames(celltype)=c(colnames(celltype)[1:(ncol(celltype)-3)],"annot", "Zest","corr")
+    }else{
+      colnames(celltype)=c(colnames(celltype)[1:(ncol(celltype)-3)],"annot", custom_colnames)
+    }
+    
     df2=apply(df, c(2), function(x) pmin(x, maxv))
     celltype_cluster=celltype[,c(2,ncol(celltype)), drop=F]
     rownames(celltype_cluster)=celltype[,1]
@@ -99,7 +104,7 @@ PlotClusters=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="segment", c
 
     ann_colors=list()
     for(ii in 1:ncol(celltype0)){
-      if(colnames(celltype0)[ii]=='Zest'){
+      if( (colnames(celltype0)[ii]=='Zest') & (!("Zest" %in% names(annotation_colors))) ){
         if(is.numeric(Zest)){
           cols0=as.numeric(as.character(celltype0[,ii]))
         }else{
@@ -144,7 +149,8 @@ PlotClusters=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="segment", c
     # change correlation annotation color to be gradient based 
     if(lab_mode=='corr_gradient'){
       break_num=100
-      grad_color=colorRampPalette(c("blue", "white","red"))(break_num)
+      #grad_color=colorRampPalette(c("blue", "white","red"))(break_num)
+      grad_color=colorRampPalette(c("darkgrey","lightgrey","red"))(break_num)
       corr_breaks=seq(-1,1,length.out=break_num)
       names(grad_color) = corr_breaks
       color_idx=unlist(lapply(as.numeric(names(ann_colors[['corr']])),function(x){which.min(abs(as.numeric(names(grad_color)) - x))}))
@@ -227,7 +233,11 @@ PlotClusters=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="segment", c
       colnames(celltype)=paste0('COL', 1:ncol(celltype))
     }
 
-    colnames(celltype)=c(colnames(celltype)[1:(ncol(celltype)-3)],"annot", "Zest","corr")
+    if(is.null(custom_colnames)){ # customize heatmap legend
+      colnames(celltype)=c(colnames(celltype)[1:(ncol(celltype)-3)],"annot", "Zest","corr")
+    }else{
+      colnames(celltype)=c(colnames(celltype)[1:(ncol(celltype)-3)],"annot", custom_colnames)
+    }
     df2_cov=apply(df_cov, c(2), function(x) pmin(x, maxv))
     celltype_cluster=celltype[,c(2,ncol(celltype)), drop=F]
     rownames(celltype_cluster)=celltype[,1]
@@ -272,7 +282,7 @@ PlotClusters=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="segment", c
 
     ann_colors=list()
     for(ii in 1:ncol(celltype0)){
-      if(colnames(celltype0)[ii]=='Zest'){
+      if(colnames(celltype0)[ii]=='Zest' &  (!("Zest" %in% names(annotation_colors))) ){
         if(is.numeric(Zest)){
           cols0=as.numeric(as.character(celltype0[,ii]))
         }else{
@@ -317,7 +327,8 @@ PlotClusters=function(df=NULL, celltype=NULL, Assign_obj=NULL, mode="segment", c
     # change correlation color to gradient color
     if(lab_mode=='corr_gradient'){
       break_num=100
-      grad_color=colorRampPalette(c("blue", "white","red"))(break_num)
+      #grad_color=colorRampPalette(c("blue", "white","red"))(break_num)
+      grad_color=colorRampPalette(c("darkgrey","lightgrey","red"))(break_num)
       corr_breaks=seq(-1,1,length.out=break_num)
       names(grad_color) = corr_breaks
       color_idx=unlist(lapply(as.numeric(names(ann_colors[['corr']])),function(x){which.min(abs(as.numeric(names(grad_color)) - x))}))
