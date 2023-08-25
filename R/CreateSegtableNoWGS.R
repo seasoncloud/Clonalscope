@@ -34,8 +34,8 @@ CreateSegtableNoWGS=function(mtx=NULL, barcodes=NULL, features=NULL, Cov_obj=NUL
                              rds_path=NULL,merge=F,assay="WGS"){
 
   # align cells as in the celltype annotation
-  mtx=mtx[,match(celltype0[,1], barcodes$V1)]
-  barcodes=barcodes[match(celltype0[,1], barcodes$V1),, drop=F]
+  mtx=mtx[,match(celltype0[,1], barcodes[,1])]
+  barcodes=barcodes[match(celltype0[,1], barcodes[,1]),, drop=F]
 
   # retrive Clonalscope clustering results
   if(is.null(Zest)){

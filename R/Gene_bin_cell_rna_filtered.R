@@ -15,8 +15,10 @@
 ## generate bed files for the bins
 Gen_bin_cell_rna_filtered=function(bin_bed=NULL, barcodes=NULL, gene_matrix=NULL, genes=NULL, gtf=NULL){
   # generate bin by cell matrix from fragment file
-  barcodes=barcodes$V1
-
+  barcodes=barcodes[,1]
+  if(typeof(genes)!="list"){
+    genes=as.data.frame(genes)
+  }
   cat("Read gene by cell matrix...\n")
   #gene_matrix=readMM(path_to_matrix)
   #genes=read.table(path_to_genes,sep='\t', header=F, stringsAsFactors = F)
@@ -38,14 +40,19 @@ Gen_bin_cell_rna_filtered=function(bin_bed=NULL, barcodes=NULL, gene_matrix=NULL
 
 
   #gtf=read.table(path_to_gtf, sep='\t', stringsAsFactors = F)
-  gtf=gtf[which(gtf$V3=='gene'),]
-  ensg=sapply(strsplit(gtf$V9,';'),'[',1)
-  ensg=sapply(strsplit(ensg,'gene_id '),'[',2)
+  if(is.null(gtf$gene_id)){
+    gtf=gtf[which(gtf$V3=='gene'),]
+    ensg=sapply(strsplit(gtf$V9,';'),'[',1)
+    ensg=sapply(strsplit(ensg,'gene_id '),'[',2)
+  }else{ # allow adjustment of gene id for non standard naming
+    ensg=gtf$gene_id
+  }
   chr=paste0(gtf$V1,'-',gtf$V4,'-', gtf$V5)
   names(chr)=ensg
   genes$site=chr[genes[,1]]
-  genes[is.na(genes[,4]),4]="0-0-0"
-
+  #genes[is.na(genes[,4]),4]="0-0-0"
+  genes[is.na(genes$site),"site"]="0-0-0"
+  
   if(grepl("chr",genes$site[1])){
     subject=GRanges(paste0(sapply(strsplit(genes$site,'-'),'[',1)), IRanges(as.numeric(sapply(strsplit(genes$site,'-'),'[',2)), as.numeric(sapply(strsplit(genes$site,'-'),'[',3))))
   }else{
