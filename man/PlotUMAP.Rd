@@ -9,6 +9,7 @@ PlotUMAP(
   celltype = NULL,
   Assign_obj = NULL,
   mode = "Zest",
+  UMAP_coor = NULL,
   maxv = 3,
   size = 1
 )
@@ -20,7 +21,11 @@ PlotUMAP(
 
 \item{mode}{Character. Mode used to color the cells in the UMAP. The value should be one of \link{"celltype","Zest", "annot"}.}
 
+\item{UMAP_coor}{A matrix with 2 columns for each cell. The order of the rows should be the same as that of df.}
+
 \item{maxv}{Numeric. Set the ceiling number for plotting.}
+
+\item{size}{Numeric. Point size for geom_point in ggplot2.}
 
 \item{Zest}{Estimated cell cluster identity from the BayesNonparCluster estimation.The order should be the same as that of the input matrix.}
 }

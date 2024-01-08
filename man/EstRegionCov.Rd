@@ -8,7 +8,7 @@ EstRegionCov(
   mtx = NULL,
   barcodes = NULL,
   features = NULL,
-  gtf = NULL,
+  bed = NULL,
   celltype0 = NULL,
   var_pt = 0.99,
   var_pt_ctrl = 0.99,
@@ -29,7 +29,7 @@ EstRegionCov(
 
 \item{features}{A matrix/ data.frame with the columns- 1st: gendID; 2nd: gene name. Each row is a feature whose order should correspond to the rows of "mtx".}
 
-\item{gtf}{A gtf file. The gene IDs in "features" should be found in the gtf file.}
+\item{bed}{A matrix with the bed file format. COL1- chromosome; COL2- start coordinate; COL3- end coordinate; COL4- the gene ID matches the one in "features" (COL1).}
 
 \item{celltype0}{A matrix with two columns: COL1- cell barcodes; COL2- cell types (Tumor cells should be labeled as "tumor" and the set of cells used as control should be labeled as "normal").}
 
@@ -50,6 +50,8 @@ EstRegionCov(
 \item{plot_path}{A path for plotting histograms.}
 
 \item{breaks}{A parameter used in the "hist" function.}
+
+\item{est_mode}{Character. Either "all" or "cna_only". 'all': clustering on all regions; 'cna_only': clustering only on regions with CNA (known from matched WGS).}
 }
 \value{
 A list with "deltas_all" and "ngenes". "deltas all" stores values of estimated coverage change for each cell and each region. "ngenes" shows number of genes in each region.

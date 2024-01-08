@@ -5,6 +5,8 @@
 \title{Generate Alleloscope object for analysis}
 \usage{
 Createobj_bulk(
+  raw_counts = NULL,
+  ref_counts = NULL,
   samplename = "sample",
   genome_assembly = "GRCh38",
   dir_path = "./",
@@ -13,6 +15,11 @@ Createobj_bulk(
 )
 }
 \arguments{
+\item{raw_counts}{A binned coverage matrix (m1 bin by n1 cell) with values being read counts in DNA sequencing data for all chromosomal regions of tumor sample. n1 can be 1 for bulk sample. The rownames should be formatted as: chr1-1-20000.}
+
+\item{ref_counts}{A binned coverage matrix (m2 bin by n2 cell) with values being read counts in DNA sequencing data for all chromosomal regions of normal sample. n2 can be 1 for bulk sample. The rownames should be formatted as: chr1-1-20000."
+Numbers of bins (rows) should be the same in the paired chromosomal regions for the paired samples}
+
 \item{samplename}{Sample name for the data.}
 
 \item{genome_assembly}{The genome assembly used for sequencing alignment. (ex: "GRCh38" or "GRCh37")}
