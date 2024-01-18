@@ -209,31 +209,6 @@ seg_table_filtered <- data.frame("chr"=bin_bed[,1], 'start'=as.numeric(bin_bed[,
 
 ```
 
-```{r clonalscope_clustering,echo=T,eval=F}
-library(Clonalscope) # load the library
-setwd("~/Clonalscope/") # set path to the github folder
-
-dir_path <- output_path; dir.create(dir_path) # set up output directory
-
-# Size of each chromosome (hg19 and GRCh38 are provided.)
-size <- read.table("data-raw/sizes.cellranger-GRCh38-1.0.0.txt", stringsAsFactors = F)
-# List of cyclegenes retrieved from the "CopyKAT"package (https://github.com/navinlabcode/copykat)
-cyclegenes <- readRDS("data-raw/cyclegenes.rds")
-# bed file indicating gene positions (hg19 and GRCh38 are provided.)
-bed <- read.table("data-raw/hg38.genes.bed", sep='\t', header = T)
-
-# no WGS, using chromosomal arms
-# Generate segmentation table for each chromosome arm.
-chrarm <- read.table("data-raw/cytoarm_table_hg38.txt", stringsAsFactors = F, sep='\t', header=T)
-chrarm <- chrarm[order(as.numeric(chrarm[,1]),as.numeric(chrarm[,3])),]
-bin_bed <- chrarm[,-2]
-seg_table_filtered <- data.frame("chr"=bin_bed[,1], 'start'=as.numeric(bin_bed[,2]),
-                                 'end'=as.numeric(bin_bed[,3]), 'states'=1, 'length'=as.numeric(bin_bed[,3])-as.numeric(bin_bed[,2]),
-                                 'mean'=0, 'var'=0, 'Var1'=1:nrow(bin_bed),'Freq'=50000,
-                                 'chrr'=paste0(bin_bed[,1],":", bin_bed[,2]), stringsAsFactors = F)
-
-```
-
 To only clustering on tumor cells, the **clustering_barcodes** parameter should be specified as the barcodes that are identified tumor (or non-normal) cells/spots. Here we utilize the seurat annotation and want to cluster on non-normal spots:
 
 ```{r clonalscope_clustering2,echo=T,eval=F}
@@ -259,16 +234,25 @@ Cov_obj <- RunCovCluster(mtx=Input_filtered$mtx, barcodes=Input_filtered$barcode
 saveRDS(Cov_obj,paste0(dir_path,"Cov_obj_chrarm.rds"))
 ```
 
-### Visualize the final clones in space
+We can visualize the clustering result that's only on tumor spots in space:
 
-```{r pressure, echo=T,eval=F}
-plot(pressure)
+```{r clonalscope_cluster_vis, echo=T,eval=F}
+clusters_clonalscope = cbind(names(Cov_obj$result_final$result$Zest),
+                             Cov_obj$result_final$result$Zest)
+
+SpatialPlot(spot_data,clusters_clonalscope,save=T,output_path,title="Clonalscope Clustering Only on Tumor Spots",cluster=T,pt_size=3)
 ```
+
+![](Clonalscope%20Clustering%20Only%20on%20Tumor%20Spots.png)
 
 ### Reference
 
-1.  Seurat:
+1.  Seurat: Stuart T, Butler A, Hoffman P, Hafemeister C, Papalexi E, Mauck WM 3rd, Hao Y, Stoeckius M, Smibert P, Satija R. Comprehensive Integration of Single-Cell Data. Cell. 2019 Jun 13;177(7):1888-1902.e21. doi: 10.1016/j.cell.2019.05.031. Epub 2019 Jun 6. PMID: 31178118; PMCID: PMC6687398.
 
-2.  CopyKAT:
+2.  CopyKAT: Gao R, Bai S, Henderson YC, Lin Y, Schalck A, Yan Y, Kumar T, Hu M, Sei E, Davis A, Wang F, Shaitelman SF, Wang JR, Chen K, Moulder S, Lai SY, Navin NE. Delineating copy number and clonal substructure in human tumors from single-cell transcriptomes. Nat Biotechnol. 2021 May;39(5):599-608. doi: 10.1038/s41587-020-00795-2. Epub 2021 Jan 18. PMID: 33462507; PMCID: PMC8122019.
 
-3.  STARCH:
+3.  STARCH: Elyanow R, Zeira R, Land M, Raphael BJ. STARCH: copy number and clone inference from spatial transcriptomics data. Phys Biol. 2021 Mar 9;18(3):035001. doi: 10.1088/1478-3975/abbe99. PMID: 33022659; PMCID: PMC9876615.
+
+4.  InferCNV: inferCNV of the Trinity CTAT Project. <https://github.com/broadinstitute/inferCNV>
+
+5.  Clonalscope: Wu CY, Sathe A, Rong J, Hess PR, Lau BT, Grimes SM, Ji HP, Zhang NR. Cancer subclone detection based on DNA copy number in single cell and spatial omic sequencing data. bioRxiv 2022.07.05.498882; doi: <https://doi.org/10.1101/2022.07.05.498882>

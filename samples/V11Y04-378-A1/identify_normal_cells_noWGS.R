@@ -168,21 +168,36 @@ starch_normal <- function(mtx=NULL,min_cells=NULL,min_umi_perspot=10,max_value=3
   return(normal_spots)
 }
 
-SpatialPlot <- function(spot_data,celltype,save=F,output_path=NULL,title=""){
+SpatialPlot <- function(spot_data,celltype,save=F,output_path=NULL,title="",cluster=F,plot_colors=NULL,pt_size=3){
   celltype_temp=celltype;rownames(celltype_temp) = celltype_temp[,1] # barcodes as rownames
   plot_df= spot_data[spot_data$include == 1, c(3,4)]
-  plot_df$celltype = "Unknown"
+  if(cluster){
+    plot_df$celltype = "Non-Tumor"
+    if(is.null(plot_colors)){
+      plot_colors = c(hue_pal()(length(levels(as.factor(celltype[,2])))),"grey")
+      names(plot_colors) <- c(levels(as.factor(celltype[,2])),"Non-Tumor")
+    }
+  }else{
+    plot_df$celltype = "Unknown"
+    if(is.null(plot_colors)){
+      plot_colors = c(hue_pal()(length(levels(as.factor(celltype[,2])))),"grey")
+      names(plot_colors) <- c(levels(as.factor(celltype[,2])),"Unknown")
+    }
+  }
   plot_df[celltype_temp[,1], "celltype"] = celltype_temp[,2]
   colnames(plot_df) = c("x","y","celltype")
+  
+  
   g<- ggplot(plot_df,aes(x=y,y=-x,color=celltype)) + 
-    geom_point(size=1) +
+    geom_point(size=pt_size) +
     ggtitle(title) +
     theme(plot.title = element_text(hjust = 0.5,size=20)) +
     #xlim(-max(spot_data[,3]),min(spot_data[,3]))+ylim(-max(spot_data[,4]),-min(spot_data[,4]))+
     theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-                       panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+                       panel.grid.minor = element_blank(), axis.line = element_line(colour = "black")) +
+    scale_colour_manual(values=plot_colors)
   if(save){
-    png(paste0(output_path,"Spatial_Distribution.png"),height=500,width=500)
+    png(paste0(output_path,title,".png"),height=800,width=800)
     print(g)
     dev.off()
   }
