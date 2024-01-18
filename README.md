@@ -1,6 +1,6 @@
 # Clonalscope
 
-Chi-Yun Wu, Zhang Lab, University of Pennsylvania
+Chi-Yun Wu, Jiazhen Rong, Zhang Lab, University of Pennsylvania
 
 ## Description
 
