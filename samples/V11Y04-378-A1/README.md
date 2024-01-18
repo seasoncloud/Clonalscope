@@ -243,7 +243,7 @@ clusters_clonalscope = cbind(names(Cov_obj$result_final$result$Zest),
 SpatialPlot(spot_data,clusters_clonalscope,save=T,output_path,title="Clonalscope Clustering Only on Tumor Spots",cluster=T,pt_size=3)
 ```
 
-![](Clonalscope%20Clustering%20Only%20on%20Tumor%20Spots.png)
+![](images/Clonalscope%20Clustering%20Only%20on%20Tumor%20Spots.png)
 
 ### Reference
 
