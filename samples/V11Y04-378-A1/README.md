@@ -78,13 +78,13 @@ Here, we introduce several ways to identify tumor versus normal cells when paire
     p1+p2
     ```
 
-    ![](images/UMAP_raw.png)
+![](images/UMAP_raw.png)
 
-    ![](images/Marker_genes_TumorMarker.png)
+![](images/Marker_genes_TumorMarker.png)
 
-    For the downstream Clonalscope clustering, please specifically annotate the tumor cells that the clustering would be performed on as **"tumor"**. The clusters that users would like to be used as control for CNV estimation should be annoated as **"normal"**.
+For the downstream Clonalscope clustering, please specifically annotate the tumor cells that the clustering would be performed on as **"tumor"**. The clusters that users would like to be used as control for CNV estimation should be annoated as **"normal"**.
 
-    ```{r seurat_visualize2, echo=T,eval=F}
+```{r seurat_visualize2, echo=T,eval=F}
     new.cluster.ids <- c("unknown/necrosis", "normal-immune", "normal-stromal", #0,1,2
                      "tumor", "tumor", "tumor", #3,4,5 - based on TP53
                      "tumor", "tumor", "tumor", #6,7,8 - based on TP53
@@ -95,7 +95,7 @@ Here, we introduce several ways to identify tumor versus normal cells when paire
     celltype <- cbind(names(seurat_obj@active.ident),as.character(seurat_obj@active.ident))
     celltype[celltype[,2] %in% c("normal-immune", "normal-stromal"),2] = "normal" 
     saveRDS(celltype,paste0(output_path,"/celltype_seurat_TumorNormal.rds"))
-    ```
+```
 
 -   **Identify normal cells via the method of CopyKAT**
 
