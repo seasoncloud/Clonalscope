@@ -13,6 +13,7 @@ In this tutorial, we will use a spatial transcriptomics colorecral carcinoma dat
 ### Load Data
 
 ```{r,echo=T,eval=F}
+library(Matrix)
 # load example data from standard 10x genomics format} 
 mtx <- readMM("data/V11Y04-378-A1/filtered_feature_bc_matrix/matrix.mtx.gz") 
 barcodes <- read.table("data/V11Y04-378-A1/filtered_feature_bc_matrix/barcodes.tsv.gz", stringsAsFactors = F, sep='\t', header=F) 
