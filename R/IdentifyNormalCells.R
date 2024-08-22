@@ -13,7 +13,7 @@ FindNormalReference <- function(counts, gene_symbols, method=c("marker","pca"),
                                               "PFC","Embryonic_CTX","Midbrain|Neuro","Bone_Marrow","Liver","Fetal_Kidney",
                                               "Adult_Kidney","Fetal_Retina","Pancreas"),
                                 normal_celltype=c("immune|endothelial|stromal|fibroblast"),
-                                plot=F){
+                                plot=F,save=F,save_path=NULL){
   message("Finding Normal Celltypes as Referene ...
   For customized input of normal reference cells, view the tutorial here: 
   https://github.com/seasoncloud/Clonalscope/tree/identify_normal_cells_noWGS/samples/V11Y04-378-A1")
@@ -53,7 +53,9 @@ FindNormalReference <- function(counts, gene_symbols, method=c("marker","pca"),
     seurat_obj <- FindClusters(seurat_obj, resolution = resolution.seurat)
     # UMAP
     seurat_obj <- RunUMAP(seurat_obj, dims = 1:dims.seurat)
-    
+    if(save){
+      saveRDS(seurat_obj,paste0(save_path,"/seurat_obj.rds"))
+    }
     
     # AUCell for celltype annotation
     counts.rankings <- AUCell_buildRankings(as.matrix(counts),
@@ -84,7 +86,8 @@ FindNormalReference <- function(counts, gene_symbols, method=c("marker","pca"),
     if(is.null(dim(normal_info))){ # only one celltype found
       normal_cluster = colnames(tab)[which.max(normal_info)]
     }else{
-      normal_cluster = unique(colnames(tab)[apply(normal_info, 1,which.max)])
+      normal_cluster = unique(colnames(tab)[sapply(1:dim(normal_info)[1],
+                                                   function(i){order(normal_info[i,],decreasing = T)[1:2]})])
     }
     
     initial_normal_spots = names(Idents(seurat_obj))[Idents(seurat_obj) %in% normal_cluster]
@@ -168,4 +171,45 @@ SpatialPlot <- function(spot_data,celltype,save=F,output_path=NULL,title="",clus
     dev.off()
   }
   return(g)
+}
+
+
+cosine_similarity <- function(cnv_1,cnv_2){
+  cos_sim = sum((cnv_1 - 1)*(cnv_2-1))/(sqrt(sum((cnv_1-1)^2))*sqrt(sum((cnv_2-1)^2)))
+  return(cos_sim)
+}
+
+MalignantAssignment<- function(Cov_obj,cutoff=0.5){
+  celltype= Cov_obj$celltype0 # input celltype
+  result=Cov_obj$result_final$result
+  cnv_df= Cov_obj$result_final$df_obj$df
+  # calculate average CNV signals 
+  cluster_cnv_load = sapply(sort(unique(Cov_obj$result_final$result$Zest)),function(c){
+    cell_bcs = names(Cov_obj$result_final$result$Zest)[Cov_obj$result_final$result$Zest == c]
+    median_cnv =  apply(cnv_df[intersect(rownames(cnv_df),cell_bcs),],2,median)
+    median_cnv 
+  })
+  cluster_cnv_load  = t(cluster_cnv_load)
+  rownames(cluster_cnv_load) = sort(unique(Cov_obj$result_final$result$Zest))
+  
+  cnv_load = sapply(1:dim(cluster_cnv_load)[1],function(i){sum((cluster_cnv_load[i,] - 1)^2)/length(cluster_cnv_load[i,])})
+  names(cnv_load) = rownames(cluster_cnv_load)
+  
+  normal_cluster =rownames(cluster_cnv_load)[order(cnv_load)[1:2]]#)[which.min(cnv_load)] 
+  
+  cluster_cos_sim = sapply(1:dim(cluster_cnv_load)[1],function(i){
+    cnv_1=cluster_cnv_load[i,]
+    cell_bcs = names(Cov_obj$result_final$result$Zest)[Cov_obj$result_final$result$Zest %in% normal_cluster]
+    cnv_2 = apply(cnv_df[intersect(rownames(cnv_df),cell_bcs),],2,median)
+    #cnv_2=cluster_cnv_load[normal_cluster,]
+    cosine_similarity(cnv_1,cnv_2)
+  })
+  names(cluster_cos_sim) = rownames(cluster_cnv_load)
+  
+  final_assignment=Cov_obj$result_final$result$Zest 
+  final_assignment[final_assignment %in% names(cluster_cos_sim)[cluster_cos_sim <= cutoff]]= "Tumor" 
+  final_assignment[final_assignment %in% names(cluster_cos_sim)[cluster_cos_sim > cutoff]]= "Normal" 
+  return(list(cluster_cnv_load=cluster_cnv_load,cnv_load=cnv_load,
+              normal_cluster=normal_cluster,
+              cluster_cos_sim=cluster_cos_sim,final_assignment=final_assignment))
 }
