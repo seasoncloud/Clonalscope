@@ -135,7 +135,7 @@ clusters_clonalscope = clusters_clonalscope[names(final_tn_res$final_assignment)
 SpatialPlot(spot_data,clusters_clonalscope,save=T,dir_path,title="Clonalscope Clustering on Tumor Spots",cluster=T,pt_size=4)
 ```
 
-![](images/Clonalscope%20Clustering%20on%20Tumor%20Spots.png)
+![](../images/Clonalscope%20Clustering%20on%20Tumor%20Spots.png)
 
 ### Reference
 
