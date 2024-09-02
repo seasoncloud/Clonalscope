@@ -1,11 +1,38 @@
-library(Seurat)
-library(BiocFileCache)
-library(GSEABase)
-library(AUCell)
-library(pheatmap)
-library(stringr)
+#library(Seurat)
+#library(BiocFileCache)
+#library(GSEABase)
+#library(AUCell)
+#library(pheatmap)
+#library(stringr)
 
-FindNormalReference <- function(counts, gene_symbols, method=c("marker","pca"),
+#' Automatically obtains an initial estimation of normal cells/spots, when paired DNA is not available.
+#'
+#' @param counts A count matrix of transcirptomics data (gene x cell/spots)
+#' @param gene_symbols Gene symbols, same dimension and order as the row of count matrix.
+#' @param method Options from c("marker","pca")"marker" - marker gene based. "pca" - PCA based (similar to STARCH).
+#' @param marker_genes Default NULL. A vector of manually input marker genes. If NULL, single cell signatures from MSigDB will be used.
+#' @param marker_source Options from c("manual","MSigDB"). 
+#' @param min_cells Number of minimum cells requried to filter genes (only used in PCA method).
+#' @param min.cells.seurat Minimum cells required for Seurat filtering. Default value is 3.
+#' @param min.features.seurat Minimum features required for Seurat preprocessing. Default value is 200.
+#' @param dims.seurat Number of PCs for Seurat PCA and UMAP. Default 15.
+#' @param resolution.seurat Clustering resolution for Seurat. Default 0.5.
+#' @param nfeatures.seurat Number of variable genes for Seurat. Default 2000.
+#' @param scale.facto.seurat Number of scaling factor for Seurat. Default 10000.
+#' @param tissue_type Tissue type of the input sample. Available options from SCSig are 
+#' "Cord_Blood","Esophagus","Stomach","Small_Intestine","Large_Intestine","PFC","Embryonic_CTX","Midbrain|Neuro",
+#' "Bone_Marrow","Liver","Fetal_Kidney","Adult_Kidney","Fetal_Retina","Pancreas".
+#' @param normal_celltype Keywords of possible normal celltypes, whose single cell marker genes will be 
+#' searched in SCSig (for the same tissue type). Keywords shall be seperated by "|".
+#' Example: normal_celltype=c("immune|endothelial|stromal|fibroblast"). Case insensitive. 
+#' @param plot=F Plot out AUCell assignment score of each celltype.
+#' @param save=F Logical Value. Whether to save Seurat object.
+#' @param save_path Path to save Seurat object.
+#' @return initial_normal_spots, a vector which contains identified barcodes/names of the normal cells/spots.
+#'
+#' @import Seurat,AUCell,BiocFileCache,GSEABase,pheatmap,stringr
+#' @export
+FindNormalReference <- function(counts, gene_symbols=NULL, method=c("marker","pca"),
                                 marker_genes=NULL,marker_source=c("manual","MSigDB"),min_cells=NULL,
                                 min.cells.seurat = 3, min.features.seurat = 200, dims.seurat=15,resolution.seurat=0.5,
                                 nfeatures.seurat=2000, scale.facto.seurat=10000,
@@ -14,7 +41,7 @@ FindNormalReference <- function(counts, gene_symbols, method=c("marker","pca"),
                                               "Adult_Kidney","Fetal_Retina","Pancreas"),
                                 normal_celltype=c("immune|endothelial|stromal|fibroblast"),
                                 plot=F,save=F,save_path=NULL){
-  message("Finding Normal Celltypes as Referene ...
+  message("Finding Normal Celltypes as Reference ...
   For customized input of normal reference cells, view the tutorial here: 
   https://github.com/seasoncloud/Clonalscope/tree/identify_normal_cells_noWGS/samples/V11Y04-378-A1")
   rownames(counts)=as.character(gene_symbols)
@@ -30,7 +57,7 @@ FindNormalReference <- function(counts, gene_symbols, method=c("marker","pca"),
                                   "COL5A1","LUM","TPM2","PDGFA","VWF"),
                         tumor = c("TP53"))
     }
-    if(marker_source =="MsigDB"){
+    if(marker_source =="MSigDB"){
       # deciding initial normal clusters based on marker genesets from MSigDB 
       bfc <- BiocFileCache(ask=FALSE)
       scsig.path <- bfcrpath(bfc, file.path("http://software.broadinstitute.org",
@@ -101,9 +128,17 @@ FindNormalReference <- function(counts, gene_symbols, method=c("marker","pca"),
   return(initial_normal_spots)
 }
 
-# This function is a R equiavalent of the method that STARCH identifies normal spots 
-# (same as filter_spots + get_normal_spots functions in STARCH).
-# The filtering parameters are set to be the same as STARCH
+#' This function clusters cells/spots based on the first principal component of gene expression.
+#' It is a R equivalent of the method that STARCH identifies normal spots.
+#'
+#' @param mtx A count matrix of transcirptomics data (gene x cell/spots)
+#' @param min_cells Number of minimum cells required to filter genes.
+#' @param min_umi_perspot Number of minimum UMI required per spot/cell. Default 10.
+#' @param max_value Capping value for log normalzied gene expression.
+#' @return normal_spots, a vector which contains identified barcodes/names of the normal cells/spots.
+#'
+#' @import
+#' 
 starch_normal <- function(mtx=NULL,min_cells=NULL,min_umi_perspot=10,max_value=3){
   # minimum cells requried for each gene
   if(is.null(min_cells)){
@@ -137,6 +172,18 @@ starch_normal <- function(mtx=NULL,min_cells=NULL,min_umi_perspot=10,max_value=3
   return(normal_spots)
 }
 
+#' This function plots celltype/clustering results for spatial transcriptomics datasets.
+#' @param spot_data Standard 10X VISIUM spatial data frame, columns being barcode, include, row, col, image_row, image_col. 
+#' @param celltype A dataframe containing two columns - barcode and clusters/celltype
+#' @param save Logical. Whether to save the plot.
+#' @param output_path Plot saving path.
+#' @param title Plot Title.
+#' @param cluster Cluster mode. If TRUE, clonalscope cluster will be plotted. If FALSE, plotting celltypes.
+#' @param plot_colors A vector of plotting colors. Default NULL, default colors will be used.
+#' @param pt_size UMAP point size. Default size 3. 
+#' 
+#' @import scales, ggplot2
+#' @export
 SpatialPlot <- function(spot_data,celltype,save=F,output_path=NULL,title="",cluster=F,plot_colors=NULL,pt_size=3){
   celltype_temp=celltype;rownames(celltype_temp) = celltype_temp[,1] # barcodes as rownames
   plot_df= spot_data[spot_data$include == 1, c(3,4)]
@@ -144,7 +191,7 @@ SpatialPlot <- function(spot_data,celltype,save=F,output_path=NULL,title="",clus
     plot_df$celltype = "Non-Tumor"
     if(is.null(plot_colors)){
       plot_colors = c(hue_pal()(length(levels(as.factor(celltype[,2])))),"grey")
-      names(plot_colors) <- c(levels(as.factor(celltype[,2])),"Non-Tumor")
+      names(plot_colors) <- c(levels(as.factor(as.numeric(celltype[,2]))),"Non-Tumor")
     }
   }else{
     plot_df$celltype = "Unknown"
@@ -155,30 +202,43 @@ SpatialPlot <- function(spot_data,celltype,save=F,output_path=NULL,title="",clus
   }
   plot_df[celltype_temp[,1], "celltype"] = celltype_temp[,2]
   colnames(plot_df) = c("x","y","celltype")
+  plot_df$celltype = factor(plot_df$celltype,levels=names(plot_colors))
   
   
   g<- ggplot(plot_df,aes(x=y,y=-x,color=celltype)) + 
     geom_point(size=pt_size) +
     ggtitle(title) +
-    theme(plot.title = element_text(hjust = 0.5,size=20)) +
     #xlim(-max(spot_data[,3]),min(spot_data[,3]))+ylim(-max(spot_data[,4]),-min(spot_data[,4]))+
     theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-                       panel.grid.minor = element_blank(), axis.line = element_line(colour = "black")) +
+                       panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
+                       plot.title = element_text(hjust = 0.5,size=20),
+                       legend.text = element_text(size=15),
+                       legend.title = element_text(size=15)) +
     scale_colour_manual(values=plot_colors)
   if(save){
-    png(paste0(output_path,title,".png"),height=800,width=800)
+    png(paste0(output_path,"/",title,".png"),height=800,width=800)
     print(g)
     dev.off()
   }
   return(g)
 }
 
-
+#' This function calculates cosine similarity of a CNV profile 1 with CNV profile 2.
+#'
 cosine_similarity <- function(cnv_1,cnv_2){
   cos_sim = sum((cnv_1 - 1)*(cnv_2-1))/(sqrt(sum((cnv_1-1)^2))*sqrt(sum((cnv_2-1)^2)))
   return(cos_sim)
 }
 
+#' This function assigns the final tumor/normal identity.
+#' The clusters with smallest CNV loads are chosen as normal reference.
+#' All the rest clusters are compared with the 
+#' @param Cov_obj A Clonalscope Object that contains clustering results.
+#' @param cutoff Numeric value from [-1,1]. Cosine Similarity threshold, if lower, assigned as normal cells.
+#' @return An object with CNV loads, cosine similarity and final assignment of tumor/normal status.
+#'
+#' @import 
+#' @export
 MalignantAssignment<- function(Cov_obj,cutoff=0.5){
   celltype= Cov_obj$celltype0 # input celltype
   result=Cov_obj$result_final$result
