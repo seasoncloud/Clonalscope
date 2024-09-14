@@ -43,7 +43,8 @@ RunCovCluster(
   Est_read1 = FALSE,
   Est_read2 = FALSE,
   Clust_read1 = FALSE,
-  Clust_read2 = FALSE
+  Clust_read2 = FALSE,
+  dense_mat = T
 )
 }
 \arguments{

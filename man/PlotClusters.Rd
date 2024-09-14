@@ -17,7 +17,8 @@ PlotClusters(
   annotation_colors = NA,
   fontsize = 10,
   fontsize_row = 10,
-  fontsize_col = 10
+  fontsize_col = 10,
+  custom_colnames = NULL
 )
 }
 \arguments{
@@ -35,13 +36,15 @@ PlotClusters(
 
 \item{allele}{Logical. Whether or not the results are based on both coverage changes and allelic ratios.}
 
-\item{lab_mode}{Character or logical. If lab_mode is not "FALSE", the argument should be one of \link{"annot","corr"} to show labeling of malignancy or malignancy index respectively.}
+\item{lab_mode}{Character or logical. If lab_mode is not "FALSE", the argument should be one of \link{"annot","corr","corr_gradient"} to show labeling of malignancy or malignancy index respectively.}
 
 \item{od_mode}{Integer. "1" to order cells based on their cluster identity; "2" to order cells based on both cluster identity and cell types.}
 
 \item{annotation_colors}{Parameter used in the function "pheatmap" to assign colors for celltypes.}
 
 \item{fontsize}{Fontsize used inn the function "pheatmap" for plotting.}
+
+\item{custom_colnames}{String Vector. Change the legend titles of the heatmap.}
 }
 \value{
 A heatmap showing the result from the Bayesian non-parametric clustering. Each row is a cell and each column is a region. The values are the coverage change.

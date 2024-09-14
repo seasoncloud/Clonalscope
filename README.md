@@ -41,7 +41,8 @@ library(Clonalscope) # load
 1.  [scRNA-seq subclone detection and malignant cell labeling](https://github.com/seasoncloud/Clonalscope/tree/main/samples/P5931/scRNA)
 2.  [Spatial Transcriptomic subclone detection](https://github.com/seasoncloud/Clonalscope/tree/main/samples/BC_ductal2/ST)
 3.  [Spatial Transcriptomic subclone tracing](https://github.com/seasoncloud/Clonalscope/tree/main/samples/BC_ductal1/ST)
-4.  [scRNA-seq subclone detection and malignant cell labeling without paired WGS/WES](https://github.com/seasoncloud/Clonalscope/tree/no_pairedWGS_branch/samples/P5847/scRNA) <br/>
+4.  [scRNA-seq subclone detection and malignant cell labeling without paired WGS/WES](https://github.com/seasoncloud/Clonalscope/tree/main/samples/P5847/scRNA) <br/>
+5. [Clustering on Tumor Spots without paired WGS/WES](https://github.com/seasoncloud/Clonalscope/tree/identify_normal_cells_noWGS/samples/V11Y04-378-A1/tumor_spots_tutorial)<br/>
 
 ## Citation
 

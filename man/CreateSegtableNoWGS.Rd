@@ -22,7 +22,9 @@ CreateSegtableNoWGS(
   nmean = 500,
   rm_extreme = 2,
   adj = -0.5,
-  rds_path = NULL
+  rds_path = NULL,
+  merge = F,
+  assay = "WGS"
 )
 }
 \arguments{
@@ -55,6 +57,10 @@ CreateSegtableNoWGS(
 \item{adj}{Numeric. Value for tumor coverage adjustment.}
 
 \item{rds_path}{The path for saving the rds files for the estimated results for each region.}
+
+\item{merge}{Whether to merge segments with similar profile or not}
+
+\item{assay}{Assay of bulk segmentation.}
 
 \item{hmm_sd}{Numeric. Fixed standard deviation for the HMM states.}
 

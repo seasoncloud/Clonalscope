@@ -14,8 +14,8 @@ Segmentation_bulk(
   rds_path = NULL,
   adj = 0,
   max_qt = 0.99,
-  rm_extreme = 2,
-  assay = "scRNA"
+  rm_extreme = 1,
+  assay = "WGS"
 )
 }
 \arguments{
@@ -36,6 +36,10 @@ Segmentation_bulk(
 \item{adj}{Numeric. Value for tumor coverage adjustment.}
 
 \item{max_qt}{Numeric value in \link{0,1}. Setting the maximum value to the max_qt quantile to avoid extreme values.}
+
+\item{rm_extreme}{Integer values in 1,2. Default setting is 1 which filters low coverage bins. Setting to 2 lead to more extreme filtering (of inifinitly large bins).}
+
+\item{assay}{String value in "WGS","scRNA".Default setting is "WGS" which does not adjust the mean value of states. Setting to "scRNA" readjust the mean value of segments by -0.5.}
 }
 \value{
 A Alleloscope object with "seg_table" added.
